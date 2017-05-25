@@ -31,7 +31,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Hasura.initialise(this);
+        Hasura.initialise(this, "hello70");
         setContentView(R.layout.activity_authentication);
 
         username = (EditText) findViewById(R.id.username);
@@ -73,7 +73,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
                     @Override
                     public void onFailure(HasuraException e) {
                         hideProgressIndicator();
-                        Toast.makeText(AuthenticationActivity.this, "Something went wrong, please ensure that you have a working internet connection", Toast.LENGTH_LONG).show();
+                        Toast.makeText(AuthenticationActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }

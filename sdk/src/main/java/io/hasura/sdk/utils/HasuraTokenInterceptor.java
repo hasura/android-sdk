@@ -11,7 +11,7 @@ public class HasuraTokenInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         Response response;
-        String session = Hasura.getUserSessionId();
+        String session = HasuraSessionStore.getUserSession();
         if (session == null) {
             response = chain.proceed(request);
         } else {

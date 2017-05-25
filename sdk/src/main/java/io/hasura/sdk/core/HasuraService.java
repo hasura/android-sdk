@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import io.hasura.sdk.auth.HasuraException;
-import io.hasura.sdk.auth.HasuraResponseConverter;
 import io.hasura.sdk.utils.HasuraTokenInterceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
