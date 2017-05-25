@@ -1,4 +1,4 @@
-Hasura Android SDK
+Hasura Android SDK(This repo is being worked on and is not ready yet)
 ==================
 
 The Android SDK for Hasura. 
