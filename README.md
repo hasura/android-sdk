@@ -24,7 +24,7 @@ Next, Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura:android-sdk:d537b795c5'
+   compile 'com.github.hasura:android-sdk:007bdf6543'
 }
 ```
 
