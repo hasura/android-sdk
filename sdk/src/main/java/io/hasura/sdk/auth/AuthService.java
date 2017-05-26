@@ -62,6 +62,7 @@ public class AuthService extends HasuraService {
     public Call<AuthResponse, HasuraException> registerUsingEmail(String email, String password) {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setEmail(email);
+        registerRequest.setUsername(email);
         registerRequest.setPassword(password);
         return mkPostCall(HasuraConfig.URL.REGISTER, registerRequest);
     }
