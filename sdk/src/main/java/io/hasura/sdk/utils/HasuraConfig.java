@@ -45,9 +45,11 @@ public class HasuraConfig {
         public static final String DB = "https://data." + PROJECT_NAME + ".hasura-app.io";
         public static final String VERSION = "v1";
 
-        public static final String LOGIN = "login";
-        public static final String REGISTER = "signup";
-        public static final String LOGOUT = "user/logout";
+        public static final String LOGIN_MOBILE = "/otp-login";
+        public static final String REGISTER_MOBILE = "/otp-signup";
+        public static final String LOGIN = "/login";
+        public static final String REGISTER = "/signup";
+        public static final String LOGOUT = "/user/logout";
         public static final String QUERY = VERSION + "/query";
     }
 }

@@ -40,7 +40,11 @@ public class HasuraResponseConverter<T> implements Converter<T, HasuraException>
                 AuthError errCode;
                 switch (code) {
                     case 400:
-                        errCode = AuthError.BAD_REQUEST;
+                        if (err.code.contentEquals("invalid-user")) {
+                            errCode = AuthError.UNREGISTERED_USER;
+                        } else {
+                            errCode = AuthError.BAD_REQUEST;
+                        }
                         break;
                     case 401:
                         errCode = AuthError.UNAUTHORIZED;
@@ -76,11 +80,11 @@ public class HasuraResponseConverter<T> implements Converter<T, HasuraException>
         return (HasuraException) e;
     }
 
-    static class AuthErrorResponse {
-        private int code;
+    private static class AuthErrorResponse {
+        private String code;
         private String message;
 
-        public int getCode() {
+        public String getCode() {
             return this.code;
         }
 

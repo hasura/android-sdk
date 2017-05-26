@@ -38,6 +38,7 @@ import io.hasura.sdk.auth.response.ResetPasswordResponse;
 import io.hasura.sdk.auth.response.SocialLoginResponse;
 import io.hasura.sdk.core.Call;
 import io.hasura.sdk.core.HasuraService;
+import io.hasura.sdk.utils.HasuraConfig;
 
 public class AuthService extends HasuraService {
 
@@ -56,6 +57,46 @@ public class AuthService extends HasuraService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<RegisterResponse>() {}.getType();
         return mkPostCall("/signup", jsonBody, respType);
+    }
+
+    public Call<AuthResponse, HasuraException> registerUsingEmail(String email, String password) {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setEmail(email);
+        registerRequest.setPassword(password);
+        return mkPostCall(HasuraConfig.URL.REGISTER, registerRequest);
+    }
+
+    public Call<AuthResponse, HasuraException> registerUsingEmailAndUsername(String email, String username, String password) {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUsername(username);
+        registerRequest.setEmail(email);
+        registerRequest.setPassword(password);
+        return mkPostCall(HasuraConfig.URL.REGISTER, registerRequest);
+    }
+
+    public Call<AuthResponse, HasuraException> registerUsingUsername(String username, String password) {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setUsername(username);
+        registerRequest.setPassword(password);
+        return mkPostCall(HasuraConfig.URL.REGISTER, registerRequest);
+    }
+
+    public Call<AuthResponse, HasuraException> registerUsingMobileOTP(String mobile) {
+        return mkPostCall(HasuraConfig.URL.REGISTER_MOBILE, new MobileAuthRequest(mobile));
+    }
+
+    public Call<AuthResponse, HasuraException> registerUsingMobileOTP(String mobile, String username) {
+        MobileAuthRequest req = new MobileAuthRequest(mobile);
+        req.setUsername(username);
+        return mkPostCall(HasuraConfig.URL.REGISTER_MOBILE, req);
+    }
+
+    public Call<MessageResponse, HasuraException> loginUsingMobileOTP(String mobile) {
+        return mkPostCall(HasuraConfig.URL.LOGIN_MOBILE, new MobileAuthRequest(mobile));
+    }
+
+    public Call<AuthResponse, HasuraException> verifyOTPForMobileLogin(String mobile, String otp) {
+        return mkPostCall(HasuraConfig.URL.LOGIN_MOBILE, new MobileAuthRequest(mobile, otp));
     }
 
     /**

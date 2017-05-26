@@ -9,7 +9,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import io.hasura.android_sdk.R;
+import io.hasura.sdk.auth.AuthError;
+import io.hasura.sdk.auth.AuthResponse;
 import io.hasura.sdk.auth.HasuraException;
+import io.hasura.sdk.auth.MessageResponse;
 import io.hasura.sdk.auth.request.RegisterRequest;
 import io.hasura.sdk.auth.response.LoginResponse;
 import io.hasura.sdk.auth.response.RegisterResponse;
@@ -46,13 +49,62 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
             ToDoActivity.startActivity(this);
         }
 
+        login();
+
+    }
+
+    public void login() {
+        Hasura.auth.loginUsingMobileOTP("8861503583")
+                .enqueue(new Callback<MessageResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(MessageResponse response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        Toast.makeText(AuthenticationActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        if (e.getCode() == AuthError.UNREGISTERED_USER) {
+                            register();
+                        }
+                    }
+                });
+    }
+
+    public void register() {
+        Hasura.auth.registerUsingMobileOTP("8861503583")
+                .enqueue(new Callback<AuthResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(AuthResponse response) {
+                        login();
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        Toast.makeText(AuthenticationActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.signInButton:
-                handleLogin();
+//                handleLogin();
+
+                Hasura.auth.verifyOTPForMobileLogin("8861503583",username.getText().toString())
+                        .enqueue(new Callback<AuthResponse, HasuraException>() {
+                            @Override
+                            public void onSuccess(AuthResponse response) {
+                                ToDoActivity.startActivity(AuthenticationActivity.this);
+                            }
+
+                            @Override
+                            public void onFailure(HasuraException e) {
+                                Toast.makeText(AuthenticationActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                 break;
             case R.id.registerButton:
                 handleRegistration();

@@ -21,6 +21,7 @@ import io.hasura.android_sdk.models.MessageResponse;
 import io.hasura.android_sdk.models.SelectTodoQuery;
 import io.hasura.android_sdk.models.TodoRecord;
 import io.hasura.sdk.auth.HasuraException;
+import io.hasura.sdk.core.Call;
 import io.hasura.sdk.core.Callback;
 import io.hasura.sdk.utils.Hasura;
 import io.hasura.sdk.utils.HasuraSessionStore;
@@ -42,25 +43,39 @@ public class ToDoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_to_do);
-//
-//        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-//
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-//        adapter = new ToDoRecyclerViewAdapter(new ToDoRecyclerViewAdapter.Interactor() {
-//            @Override
-//            public void onTodoClicked(int position, TodoRecord record) {
+        setContentView(R.layout.activity_to_do);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        adapter = new ToDoRecyclerViewAdapter(new ToDoRecyclerViewAdapter.Interactor() {
+            @Override
+            public void onTodoClicked(int position, TodoRecord record) {
 //                toggleTodo(position, record);
-//            }
-//
-//            @Override
-//            public void onTodoLongClicked(int position, TodoRecord record) {
+            }
+
+            @Override
+            public void onTodoLongClicked(int position, TodoRecord record) {
 //                deleteTodo(position, record);
-//            }
-//        });
-//        recyclerView.setLayoutManager(layoutManager);
-//        recyclerView.setAdapter(adapter);
+            }
+        });
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
 //        fetchTodosFromDB();
+
+
+        Call<List<TodoRecord>, HasuraException> call = Hasura.db.query(new SelectTodoQuery(HasuraSessionStore.getUserId()));
+        call.enqueue(new Callback<List<TodoRecord>, HasuraException>() {
+            @Override
+            public void onSuccess(List<TodoRecord> response) {
+
+            }
+
+            @Override
+            public void onFailure(HasuraException e) {
+
+            }
+        });
     }
 
 //    private void handleError(ResponseBody error) {
