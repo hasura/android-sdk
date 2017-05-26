@@ -1,5 +1,7 @@
 package io.hasura.sdk.auth;
 
+import android.support.annotation.Nullable;
+
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -59,6 +61,15 @@ public class AuthService extends HasuraService {
         return mkPostCall("/signup", jsonBody, respType);
     }
 
+    public Call<AuthResponse, HasuraException> register(String username, @Nullable String email, @Nullable String mobile, String password) {
+        RegisterRequest registerRequest = new RegisterRequest();
+        registerRequest.setEmail(email);
+        registerRequest.setUsername(username);
+        registerRequest.setPassword(password);
+        registerRequest.setMobile(mobile);
+        return mkPostCall(HasuraConfig.URL.REGISTER, registerRequest);
+    }
+
     public Call<AuthResponse, HasuraException> registerUsingEmail(String email, String password) {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setEmail(email);
@@ -67,7 +78,7 @@ public class AuthService extends HasuraService {
         return mkPostCall(HasuraConfig.URL.REGISTER, registerRequest);
     }
 
-    public Call<AuthResponse, HasuraException> registerUsingEmailAndUsername(String email, String username, String password) {
+    public Call<AuthResponse, HasuraException> register(String email, String username, String password) {
         RegisterRequest registerRequest = new RegisterRequest();
         registerRequest.setUsername(username);
         registerRequest.setEmail(email);
