@@ -2,7 +2,7 @@ package io.hasura.sdk.auth.response;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ResendEmailResponse {
+public class MessageResponse {
     @SerializedName("message")
     String message;
 

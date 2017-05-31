@@ -1,4 +1,4 @@
-package io.hasura.sdk.utils;
+package io.hasura.sdk.auth;
 
 import android.content.Context;
 import android.content.SharedPreferences;

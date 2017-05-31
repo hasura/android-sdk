@@ -8,13 +8,13 @@ public class ConfirmMobileRequest {
     String mobile;
 
     @SerializedName("otp")
-    int otp;
+    String otp;
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
-    public void setOTP(int otp) {
+    public void setOTP(String otp) {
         this.otp = otp;
     }
 }

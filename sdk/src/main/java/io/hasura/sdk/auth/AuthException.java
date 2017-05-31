@@ -1,27 +1,27 @@
 package io.hasura.sdk.auth;
 
-public class HasuraException extends Exception {
+public class AuthException extends Exception {
     private static final long serialVersionUID = 1;
-    private AuthError code;
+    private AuthErrorCode code;
 
     /**
-     * Construct a new HasuraException with a particular error code.
+     * Construct a new AuthException with a particular error code.
      *
      * @param theCode    The error code to identify the type of exception.
      * @param theMessage A message describing the error in more detail.
      */
-    public HasuraException(AuthError theCode, String theMessage) {
+    public AuthException(AuthErrorCode theCode, String theMessage) {
         super(theMessage);
         code = theCode;
     }
 
     /**
-     * Construct a new HasuraException with a particular error code.
+     * Construct a new AuthException with a particular error code.
      *
      * @param theCode The error code to identify the type of exception.
      * @param cause   The cause of the error.
      */
-    public HasuraException(AuthError theCode, Throwable cause) {
+    public AuthException(AuthErrorCode theCode, Throwable cause) {
         super(cause);
         code = theCode;
     }
@@ -31,14 +31,14 @@ public class HasuraException extends Exception {
      *
      * @return The code for this error.
      */
-    public AuthError getCode() {
+    public AuthErrorCode getCode() {
         return code;
     }
 
     @Override
     public String toString() {
         String message =
-                HasuraException.class.getName() + " "
+                AuthException.class.getName() + " "
                         + code.toString() + " : " + super.getLocalizedMessage();
         return message;
     }

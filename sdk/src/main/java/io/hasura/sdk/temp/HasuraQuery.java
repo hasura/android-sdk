@@ -1,4 +1,4 @@
-package io.hasura.sdk.utils;
+package io.hasura.sdk.temp;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

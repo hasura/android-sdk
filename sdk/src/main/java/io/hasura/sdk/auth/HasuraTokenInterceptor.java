@@ -1,4 +1,4 @@
-package io.hasura.sdk.utils;
+package io.hasura.sdk.auth;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public class HasuraTokenInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         Response response;
-        String session = HasuraSessionStore.getUserSession();
+        String session = Hasura.currentUser() != null ? Hasura.currentUser().getAuthToken() : null;
         if (session == null) {
             response = chain.proceed(request);
         } else {
