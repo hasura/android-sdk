@@ -1,9 +1,10 @@
-package io.hasura.sdk.auth;
+package io.hasura.sdk.auth.service;
 
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 
+import io.hasura.sdk.auth.AuthException;
 import io.hasura.sdk.auth.request.AuthRequest;
 import io.hasura.sdk.auth.request.ConfirmEmailRequest;
 import io.hasura.sdk.auth.request.ConfirmMobileRequest;
@@ -88,20 +89,20 @@ public class AnonymousUserService extends AuthService {
     public Call<AuthResponse, AuthException> login(AuthRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<LoginResponse>() {}.getType();
-        return makePostCall("/login", jsonBody, respType);
+        return makePostCall("/otpLogin", jsonBody, respType);
     }
 
 
     public Call<MessageResponse, AuthException> sendOtpToMobile(AuthRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<AuthResponse>() {}.getType();
-        return makePostCall("/otp-login", jsonBody, respType);
+        return makePostCall("/otp-otpLogin", jsonBody, respType);
     }
 
     public Call<AuthResponse, AuthException> otpLogin(AuthRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<AuthResponse>() {}.getType();
-        return makePostCall("/otp-login", jsonBody, respType);
+        return makePostCall("/otp-otpLogin", jsonBody, respType);
     }
 
 
@@ -109,7 +110,7 @@ public class AnonymousUserService extends AuthService {
      * Login an existing user
      *
      * Login an existing user by passing username and password. This is a shortcut for the above
-     * method when only username and password is used for login.
+     * method when only username and password is used for otpLogin.
      *
      * @param userName the user name of the user
      * @param password password of the user (unencrypted)
@@ -212,7 +213,7 @@ public class AnonymousUserService extends AuthService {
      *     After you have obtained "access_token" or an "id_token" from your provider, you have to
      *     pass the token and the provider name to {@link SocialLoginRequest}.
      *     This method will then create the new user (if she is not an existing user), or else it
-     *     will login the user.
+     *     will otpLogin the user.
      * </p>
      * @param r {@link SocialLoginRequest}
      * @return  {@link SocialLoginResponse}

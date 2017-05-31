@@ -11,12 +11,12 @@ import android.widget.EditText;
 import io.hasura.android_sdk.R;
 import io.hasura.sdk.auth.AuthErrorCode;
 import io.hasura.sdk.auth.AuthException;
+import io.hasura.sdk.auth.Hasura;
 import io.hasura.sdk.auth.HasuraSessionStore;
 import io.hasura.sdk.auth.HasuraUser;
-import io.hasura.sdk.auth.Hasura;
 import io.hasura.sdk.auth.responseListener.AuthResponseListener;
-import io.hasura.sdk.auth.responseListener.LogoutResponseListener;
 import io.hasura.sdk.auth.responseListener.OtpStatusListener;
+import io.hasura.sdk.temp.HasuraQuery;
 
 
 public class AuthenticationActivity extends BaseActivity implements View.OnClickListener {
@@ -62,6 +62,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
 
             sendOtp();
         }
+
     }
 
     private void signUp() {
@@ -78,7 +79,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
     }
 
     private void login() {
-        user.login(username.getText().toString(), new AuthResponseListener() {
+        user.otpLogin(username.getText().toString(), new AuthResponseListener() {
             @Override
             public void onSuccess(HasuraUser user) {
                 //Sign in successfully completed.

@@ -1,9 +1,10 @@
-package io.hasura.sdk.auth;
+package io.hasura.sdk.auth.service;
 
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 
+import io.hasura.sdk.auth.AuthException;
 import io.hasura.sdk.auth.request.ChangeEmailRequest;
 import io.hasura.sdk.auth.request.ChangeMobileRequest;
 import io.hasura.sdk.auth.request.ChangePasswordRequest;

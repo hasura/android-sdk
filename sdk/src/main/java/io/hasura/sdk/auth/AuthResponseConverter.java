@@ -3,6 +3,8 @@ package io.hasura.sdk.auth;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import io.hasura.sdk.auth.response.AuthErrorResponse;
+import io.hasura.sdk.auth.service.AuthService;
 import io.hasura.sdk.core.Converter;
 import io.hasura.sdk.core.HasuraJsonException;
 import io.hasura.sdk.core.Util;

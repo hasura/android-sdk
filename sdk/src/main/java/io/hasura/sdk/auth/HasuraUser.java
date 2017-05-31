@@ -1,7 +1,5 @@
 package io.hasura.sdk.auth;
 
-import java.util.List;
-
 import io.hasura.sdk.auth.request.AuthRequest;
 import io.hasura.sdk.auth.response.AuthResponse;
 import io.hasura.sdk.auth.response.LogoutResponse;
@@ -9,6 +7,8 @@ import io.hasura.sdk.auth.response.MessageResponse;
 import io.hasura.sdk.auth.responseListener.AuthResponseListener;
 import io.hasura.sdk.auth.responseListener.LogoutResponseListener;
 import io.hasura.sdk.auth.responseListener.OtpStatusListener;
+import io.hasura.sdk.auth.service.AnonymousUserService;
+import io.hasura.sdk.auth.service.HasuraUserService;
 import io.hasura.sdk.core.Callback;
 
 /**
@@ -117,7 +117,7 @@ public class HasuraUser {
         return new AuthRequest(this.username, this.email, this.mobile, this.password);
     }
 
-    public void login(final AuthResponseListener listener) {
+    public void otpLogin(final AuthResponseListener listener) {
         anonApiService.login(getAuthRequest())
                 .enqueue(new AuthResponseCallbackHandler(listener));
     }
@@ -141,7 +141,7 @@ public class HasuraUser {
                 });
     }
 
-    public void login(String otp, final AuthResponseListener listener) {
+    public void otpLogin(String otp, final AuthResponseListener listener) {
         AuthRequest request = new AuthRequest(mobile, otp);
         anonApiService.otpLogin(request)
                 .enqueue(new AuthResponseCallbackHandler(listener));

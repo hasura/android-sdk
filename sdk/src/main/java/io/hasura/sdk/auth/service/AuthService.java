@@ -1,4 +1,4 @@
-package io.hasura.sdk.auth;
+package io.hasura.sdk.auth.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,6 +7,9 @@ import java.lang.reflect.Type;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 
+import io.hasura.sdk.auth.AuthException;
+import io.hasura.sdk.auth.AuthResponseConverter;
+import io.hasura.sdk.auth.HasuraTokenInterceptor;
 import io.hasura.sdk.core.Call;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.MediaType;

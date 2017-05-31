@@ -15,9 +15,9 @@ public class HasuraConfig {
 
     public static class URL {
         public static final String VERSION = "v1";
-        public static final String LOGIN_MOBILE = "/otp-login";
+        public static final String LOGIN_MOBILE = "/otp-otpLogin";
         public static final String SIGNUP_MOBILE = "/otp-signup";
-        public static final String LOGIN = "/login";
+        public static final String LOGIN = "/otpLogin";
         public static final String SIGNUP = "/signup";
         public static final String LOGOUT = "/user/logout";
         public static final String QUERY = VERSION + "/query";

@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class HasuraQuery {
 
-    enum QueryType {
+    public enum QueryType {
         SELECT,
         INSERT,
         UPDATE,
@@ -94,7 +94,7 @@ public class HasuraQuery {
 
     }
 
-    static class Builder {
+    public static class Builder {
         private QueryType queryType;
         private String table;
         private String[] columns;
@@ -109,6 +109,7 @@ public class HasuraQuery {
 
         public Builder onTable(String tableName) {
             this.table = tableName;
+
             return this;
         }
 

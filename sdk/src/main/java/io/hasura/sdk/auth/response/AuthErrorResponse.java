@@ -1,4 +1,4 @@
-package io.hasura.sdk.auth;
+package io.hasura.sdk.auth.response;
 
 public class AuthErrorResponse {
     private String code;
