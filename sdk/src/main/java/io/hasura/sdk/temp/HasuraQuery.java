@@ -12,6 +12,10 @@ import java.util.HashMap;
 
 public class HasuraQuery {
 
+
+
+
+
     public enum QueryType {
         SELECT,
         INSERT,
@@ -109,7 +113,6 @@ public class HasuraQuery {
 
         public Builder onTable(String tableName) {
             this.table = tableName;
-
             return this;
         }
 
