@@ -1,6 +1,6 @@
 package io.hasura.sdk.auth.responseListener;
 
-import io.hasura.sdk.auth.AuthException;
+import io.hasura.sdk.core.HasuraException;
 import io.hasura.sdk.auth.HasuraUser;
 
 /**
@@ -9,5 +9,5 @@ import io.hasura.sdk.auth.HasuraUser;
 
 public interface AuthResponseListener {
     void onSuccess(HasuraUser user);
-    void onFailure(AuthException e);
+    void onFailure(HasuraException e);
 }

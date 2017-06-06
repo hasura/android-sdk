@@ -1,6 +1,6 @@
 package io.hasura.sdk.auth.responseListener;
 
-import io.hasura.sdk.auth.AuthException;
+import io.hasura.sdk.core.HasuraException;
 
 /**
  * Created by jaison on 31/05/17.
@@ -8,5 +8,5 @@ import io.hasura.sdk.auth.AuthException;
 
 public interface OtpStatusListener {
     void onSuccess();
-    void onFailure(AuthException e);
+    void onFailure(HasuraException e);
 }

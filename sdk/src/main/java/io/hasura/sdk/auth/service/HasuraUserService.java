@@ -4,7 +4,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 
-import io.hasura.sdk.auth.AuthException;
+import io.hasura.sdk.core.HasuraException;
 import io.hasura.sdk.auth.request.ChangeEmailRequest;
 import io.hasura.sdk.auth.request.ChangeMobileRequest;
 import io.hasura.sdk.auth.request.ChangePasswordRequest;
@@ -21,31 +21,18 @@ import io.hasura.sdk.auth.response.GetCredentialsResponse;
 import io.hasura.sdk.auth.response.LogoutResponse;
 import io.hasura.sdk.core.Call;
 import io.hasura.sdk.core.HasuraConfig;
+import io.hasura.sdk.core.HasuraTokenInterceptor;
 import okhttp3.OkHttpClient;
 
 /**
  * Created by jaison on 31/05/17.
  */
 
-public class HasuraUserService extends AuthService {
+public class HasuraUserService extends HasuraApiService {
 
-    private static HasuraUserService instance;
-
-    public static HasuraUserService getInstance() {
-        if (instance == null) {
-            instance = new HasuraUserService(HasuraConfig.BASE_URL.AUTH);
-        }
-        return instance;
+    public HasuraUserService(HasuraTokenInterceptor tokenInterceptor) {
+        super(HasuraConfig.BASE_URL.AUTH, tokenInterceptor);
     }
-
-    public HasuraUserService(String authUrl, OkHttpClient httpClient) {
-        super(authUrl, httpClient);
-    }
-
-    public HasuraUserService(String authUrl) {
-        super(authUrl);
-    }
-
 
     /**
      * Returns credentials of the logged in user
@@ -53,13 +40,13 @@ public class HasuraUserService extends AuthService {
      *     This method can be used to retrieve Hasura credentials for the current logged in user.
      *     Hasura credentials include "Hasura Id", "Hausura Role" and "Session Id". This method can
      *     also be used to check if the user has an existing session (or logged in basically). If
-     *     not logged in, it will throw an {@link AuthException}.
+     *     not logged in, it will throw an {@link HasuraException}.
      * </p>
      *
      * @return {@link GetCredentialsResponse}
-     * @throws AuthException
+     * @throws HasuraException
      */
-    public Call<GetCredentialsResponse, AuthException> getCredentials() {
+    public Call<GetCredentialsResponse, HasuraException> getCredentials() {
         Type respType = new TypeToken<GetCredentialsResponse>() {
         }.getType();
         return makeGetCall("/user/account/info", respType);
@@ -74,9 +61,9 @@ public class HasuraUserService extends AuthService {
      *
      * @param r {@link ChangePasswordRequest}
      * @return  {@link ChangePasswordResponse}
-     * @throws AuthException
+     * @throws HasuraException
      */
-    public Call<ChangePasswordResponse, AuthException> changePassword(ChangePasswordRequest r) {
+    public Call<ChangePasswordResponse, HasuraException> changePassword(ChangePasswordRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangePasswordResponse>() {
         }.getType();
@@ -92,9 +79,9 @@ public class HasuraUserService extends AuthService {
      *
      * @param r {@link ChangeEmailRequest}
      * @return  {@link ChangeEmailResponse}
-     * @throws AuthException
+     * @throws HasuraException
      */
-    public Call<ChangeEmailResponse, AuthException> changeEmail(ChangeEmailRequest r) {
+    public Call<ChangeEmailResponse, HasuraException> changeEmail(ChangeEmailRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangeEmailResponse>() {
         }.getType();
@@ -106,9 +93,9 @@ public class HasuraUserService extends AuthService {
      *
      * @param r {@link ChangeMobileRequest}
      * @return  {@link ChangeMobileResponse}
-     * @throws AuthException
+     * @throws HasuraException
      */
-    public Call<ChangeMobileResponse, AuthException> changeMobile(ChangeMobileRequest r) {
+    public Call<ChangeMobileResponse, HasuraException> changeMobile(ChangeMobileRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangeMobileResponse>() {
         }.getType();
@@ -121,7 +108,7 @@ public class HasuraUserService extends AuthService {
      * @param r
      * @return
      */
-    public Call<CheckPasswordResponse, AuthException> verifyPassword(CheckPasswordRequest r) {
+    public Call<CheckPasswordResponse, HasuraException> verifyPassword(CheckPasswordRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<CheckPasswordResponse>() {
         }.getType();
@@ -134,9 +121,9 @@ public class HasuraUserService extends AuthService {
      *
      * @param r {@link DeleteAccountRequest}
      * @return  {@link DeleteAccountResponse}
-     * @throws AuthException
+     * @throws HasuraException
      */
-    public Call<DeleteAccountResponse, AuthException> deleteAccount(DeleteAccountRequest r) {
+    public Call<DeleteAccountResponse, HasuraException> deleteAccount(DeleteAccountRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<DeleteAccountResponse>() {
         }.getType();
@@ -148,9 +135,9 @@ public class HasuraUserService extends AuthService {
      *
      * @param r {@link ChangeUserNameRequest}
      * @return  {@link ChangeUserNameResponse}
-     * @throws AuthException
+     * @throws HasuraException
      */
-    public Call<ChangeUserNameResponse, AuthException> changeUserName(ChangeUserNameRequest r) {
+    public Call<ChangeUserNameResponse, HasuraException> changeUserName(ChangeUserNameRequest r) {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangeUserNameResponse>() {
         }.getType();
@@ -162,9 +149,9 @@ public class HasuraUserService extends AuthService {
      * Logout a logged-in user.
      *
      * @return a {@link LogoutResponse} type
-     * @throws AuthException
+     * @throws HasuraException
      */
-    public Call<LogoutResponse, AuthException> logout() {
+    public Call<LogoutResponse, HasuraException> logout() {
         Type respType = new TypeToken<LogoutResponse>() {
         }.getType();
         return makeGetCall("/user/logout", respType);

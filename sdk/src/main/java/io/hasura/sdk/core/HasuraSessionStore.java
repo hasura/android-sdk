@@ -1,9 +1,11 @@
-package io.hasura.sdk.auth;
+package io.hasura.sdk.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
+
+import io.hasura.sdk.auth.HasuraUser;
 
 /**
  * Created by jaison on 30/03/17.

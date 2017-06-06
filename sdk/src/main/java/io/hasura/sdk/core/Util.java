@@ -18,7 +18,6 @@ public class Util {
         int code = response.code();
         try {
             String rawBody = response.body().string();
-            Log.i("Response",rawBody);
             return gson.fromJson(rawBody, bodyType);
         } catch (JsonSyntaxException e) {
             String msg = "JSON structure not as expected. Schema changed maybe? : " + e.getMessage();

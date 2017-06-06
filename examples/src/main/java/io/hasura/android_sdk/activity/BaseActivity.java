@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import io.hasura.sdk.core.HasuraErrorCode;
+import io.hasura.sdk.core.HasuraException;
+
 public class BaseActivity extends AppCompatActivity {
 
     ProgressDialog pd;
@@ -40,5 +43,22 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void hideProgressIndicator() {
         pd.dismiss();
+    }
+
+    public void handleError(HasuraException e) {
+        if (e.getCode() == HasuraErrorCode.UNAUTHORISED) {
+            showErrorAlert("You login session has expired. Please log in again", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    completeUserLogout();
+
+                }
+            });
+        } else
+            showErrorAlert(e.getMessage(), null);
+    }
+
+    public void completeUserLogout() {
+        AuthenticationActivity.startActivity(this);
     }
 }

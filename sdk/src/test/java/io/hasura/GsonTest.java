@@ -9,34 +9,45 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.hasura.sdk.temp.HasuraQuery;
+
 /**
  * Created by jaison on 31/05/17.
  */
 
 public class GsonTest {
 
-    class User {
-        String name;
-        int age;
-
-        public User(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-    }
-
     @Test
     public void test() throws IOException {
+        HasuraQuery q = HasuraQuery.SELECT("tableName")
+                .columns("column1", "column2")
+                .relationship("relationship1").columns("r1c1", "r1c2", "r1c3")
+                .relationship("relationship2").columns("r2c1", "r2c2", "r2c3")
+                .orderBy("col").nullsFirst().ascending()
+                .limit(1)
+                .offset(0)
+                .where("user1").equalTo("1")
+                .where("user2").equalTo("2")
+                .beginGroup()
+                    .where("checkin").equalTo("accepted")
+                    .or()
+                    .where("checkin").equalTo("null")
+                .endGroup()
+                .build();
 
-        List<User> userList = new ArrayList<>();
-        userList.add(new User("user1",22));
-        userList.add(new User("user2",23));
+//                .where("column1").equalTo("someString")
+//                .and()
+//                .where("column2").equalTo("someotherstring")
+//                .or()
+//                .where("column3").equalTo("blah")
+//                .beginGroup()
+//                    .where("column4").equalTo("blach")
+//                    .or()
+//                    .where("column5").equalTo("sadsad")
+//                .endGroup()
+//                .build();
 
-        String userListString = new Gson().toJson(userList);
-
-        System.out.print(userListString);
-
-        List<User> users = new Gson().fromJson(userListString, new TypeToken<List<User>>(){}.getType());
+        q.printRequestAsString();
 
 
     }

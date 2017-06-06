@@ -1,4 +1,4 @@
-package io.hasura.sdk.auth;
+package io.hasura.sdk.core;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by jaison on 29/05/17.
  */
 
-public enum AuthErrorCode {
+public enum HasuraErrorCode {
     CONNECTION_ERROR("connection-error"),
     USER_ALREADY_EXISTS("user-already-exists"),
     INTERNAL_ERROR("internal-error"),
@@ -18,24 +18,25 @@ public enum AuthErrorCode {
     EMAIL_EXPECTED("expected-email"),
     USERNAME_EXPECTED("expected-username"),
     INVALID_USER("invalid-user"),
+    UNAUTHORISED("session-expired"),
 
     UNKNOWN("unknown"); // For response without a code key TODO: REMOVE if not required
 
     private String code;
-    private static final Map<String, AuthErrorCode> codeValues;
+    private static final Map<String, HasuraErrorCode> codeValues;
 
     static {
         codeValues = new HashMap<>();
-        for (AuthErrorCode error : AuthErrorCode.values()) {
+        for (HasuraErrorCode error : HasuraErrorCode.values()) {
             codeValues.put(error.code, error);
         }
     }
 
-    AuthErrorCode(String code) {
+    HasuraErrorCode(String code) {
         this.code = code;
     }
 
-    public static AuthErrorCode getFromCode(String code) {
+    public static HasuraErrorCode getFromCode(String code) {
         if (code == null) {
             return UNKNOWN;
         }

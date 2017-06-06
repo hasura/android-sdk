@@ -1,15 +1,24 @@
 package io.hasura.sdk.auth;
 
 import io.hasura.sdk.auth.request.AuthRequest;
+import io.hasura.sdk.auth.request.ResendOTPRequest;
+import io.hasura.sdk.auth.request.SocialLoginRequest;
 import io.hasura.sdk.auth.response.AuthResponse;
 import io.hasura.sdk.auth.response.LogoutResponse;
 import io.hasura.sdk.auth.response.MessageResponse;
 import io.hasura.sdk.auth.responseListener.AuthResponseListener;
 import io.hasura.sdk.auth.responseListener.LogoutResponseListener;
+import io.hasura.sdk.auth.responseListener.MobileConfirmationResponseListener;
 import io.hasura.sdk.auth.responseListener.OtpStatusListener;
 import io.hasura.sdk.auth.service.AnonymousUserService;
+import io.hasura.sdk.auth.service.CustomService;
+import io.hasura.sdk.auth.service.DBService;
 import io.hasura.sdk.auth.service.HasuraUserService;
+import io.hasura.sdk.auth.service.QueryTemplateService;
 import io.hasura.sdk.core.Callback;
+import io.hasura.sdk.core.HasuraException;
+import io.hasura.sdk.core.HasuraSessionStore;
+import io.hasura.sdk.core.HasuraTokenInterceptor;
 
 /**
  * Created by jaison on 30/05/17.
@@ -25,6 +34,7 @@ public class HasuraUser {
     private String authToken;
     private String password;
     private String accessToken;
+    private boolean isMobileOtpLoginEnabled = false;
 
     public Integer getId() {
         return id;
@@ -58,11 +68,6 @@ public class HasuraUser {
         return isMobileOtpLoginEnabled;
     }
 
-    private boolean isMobileOtpLoginEnabled = false;
-
-    private AnonymousUserService anonApiService = AnonymousUserService.getInstance();
-    private HasuraUserService userApiService = HasuraUserService.getInstance();
-
     public void setId(Integer id) {
         this.id = id;
     }
@@ -77,6 +82,7 @@ public class HasuraUser {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+        hasuraTokenInterceptor.setAuthToken(authToken);
     }
 
     public void setAccessToken(String accessToken) {
@@ -99,6 +105,12 @@ public class HasuraUser {
         this.mobile = mobile;
     }
 
+    private HasuraTokenInterceptor hasuraTokenInterceptor = new HasuraTokenInterceptor();
+    private AnonymousUserService anonApiService = AnonymousUserService.getInstance();
+    private HasuraUserService userApiService;
+    private DBService dbService;
+    private QueryTemplateService qtService;
+
     public void enableMobileOtpLogin() {
         this.isMobileOtpLoginEnabled = true;
     }
@@ -106,10 +118,10 @@ public class HasuraUser {
     public void signUp(final AuthResponseListener listener) {
         if (isMobileOtpLoginEnabled) {
             anonApiService.signUpForMobileOtp(getAuthRequest())
-                    .enqueue(new AuthResponseCallbackHandler(listener));
+                    .executeAsync(new AuthResponseCallbackHandler(listener));
         } else {
             anonApiService.signUp(getAuthRequest())
-                    .enqueue(new AuthResponseCallbackHandler(listener));
+                    .executeAsync(new AuthResponseCallbackHandler(listener));
         }
     }
 
@@ -117,14 +129,9 @@ public class HasuraUser {
         return new AuthRequest(this.username, this.email, this.mobile, this.password);
     }
 
-    public void otpLogin(final AuthResponseListener listener) {
-        anonApiService.login(getAuthRequest())
-                .enqueue(new AuthResponseCallbackHandler(listener));
-    }
-
     public void sendOtpToMobile(final OtpStatusListener listener) {
         anonApiService.sendOtpToMobile(getAuthRequest())
-                .enqueue(new Callback<MessageResponse, AuthException>() {
+                .executeAsync(new Callback<MessageResponse, HasuraException>() {
                     @Override
                     public void onSuccess(MessageResponse response) {
                         if (listener != null) {
@@ -133,7 +140,7 @@ public class HasuraUser {
                     }
 
                     @Override
-                    public void onFailure(AuthException e) {
+                    public void onFailure(HasuraException e) {
                         if (listener != null) {
                             listener.onFailure(e);
                         }
@@ -144,10 +151,20 @@ public class HasuraUser {
     public void otpLogin(String otp, final AuthResponseListener listener) {
         AuthRequest request = new AuthRequest(mobile, otp);
         anonApiService.otpLogin(request)
-                .enqueue(new AuthResponseCallbackHandler(listener));
+                .executeAsync(new AuthResponseCallbackHandler(listener));
     }
 
-    class AuthResponseCallbackHandler implements Callback<AuthResponse, AuthException> {
+    public void login(final AuthResponseListener listener) {
+        anonApiService.login(getAuthRequest())
+                .executeAsync(new AuthResponseCallbackHandler(listener));
+    }
+
+    public void socialLogin(HasuraSocialLoginType type, String token, final AuthResponseListener listener) {
+        anonApiService.socialAuth(new SocialLoginRequest(type.getCode(), token))
+                .executeAsync(new AuthResponseCallbackHandler(listener));
+    }
+
+    private class AuthResponseCallbackHandler implements Callback<AuthResponse, HasuraException> {
 
         AuthResponseListener listener;
 
@@ -157,10 +174,10 @@ public class HasuraUser {
 
         @Override
         public void onSuccess(AuthResponse response) {
-            id = response.getId();
-            roles = response.getRoles();
-            authToken = response.getAuthToken();
-            accessToken = response.getAccess_token();
+            setId(response.getId());
+            setRoles(response.getRoles());
+            setAuthToken(response.getAuthToken());
+            setAccessToken(response.getAccess_token());
 
             HasuraSessionStore.saveUser(HasuraUser.this);
 
@@ -170,32 +187,97 @@ public class HasuraUser {
         }
 
         @Override
-        public void onFailure(AuthException e) {
+        public void onFailure(HasuraException e) {
             if (listener != null) {
                 listener.onFailure(e);
             }
         }
     }
 
-    public void logout(final LogoutResponseListener listener) {
-        userApiService.logout()
-                .enqueue(new Callback<LogoutResponse, AuthException>() {
+    public void confirmMobile(String otp, final MobileConfirmationResponseListener listener) {
+        anonApiService.confirmMobile(mobile, otp)
+                .executeAsync(new Callback<MessageResponse, HasuraException>() {
                     @Override
-                    public void onSuccess(LogoutResponse response) {
-                        HasuraSessionStore.deleteSavedUser();
+                    public void onSuccess(MessageResponse response) {
                         if (listener != null) {
                             listener.onSuccess();
                         }
                     }
 
                     @Override
-                    public void onFailure(AuthException e) {
+                    public void onFailure(HasuraException e) {
                         if (listener != null) {
                             listener.onFailure(e);
                         }
                     }
                 });
     }
+
+    public void resendOtpForMobileConfirmation(final OtpStatusListener listener) {
+        anonApiService.resendOTP(mobile)
+                .executeAsync(new Callback<MessageResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(MessageResponse response) {
+                        if (listener != null) {
+                            listener.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        if (listener != null) {
+                            listener.onFailure(e);
+                        }
+                    }
+                });
+    }
+
+    public void logout(final LogoutResponseListener listener) {
+        getUserService().logout()
+                .executeAsync(new Callback<LogoutResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(LogoutResponse response) {
+                        HasuraSessionStore.deleteSavedUser();
+                        setAuthToken(null);
+                        if (listener != null) {
+                            listener.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        if (listener != null) {
+                            listener.onFailure(e);
+                        }
+                    }
+                });
+    }
+
+    private HasuraUserService getUserService() {
+        if (userApiService == null) {
+            userApiService = new HasuraUserService(hasuraTokenInterceptor);
+        }
+        return userApiService;
+    }
+
+    public DBService dataService() {
+        if (dbService == null) {
+            dbService = new DBService(hasuraTokenInterceptor);
+        }
+        return dbService;
+    }
+
+    public CustomService customService(String serviceName) {
+        return new CustomService(serviceName, hasuraTokenInterceptor);
+    }
+
+    public QueryTemplateService.Builder queryTemplateService(String templateName) {
+        if (qtService == null) {
+            qtService = new QueryTemplateService(hasuraTokenInterceptor);
+        }
+        return qtService.getBuilder(templateName);
+    }
+
 
     @Override
     public String toString() {
@@ -211,4 +293,5 @@ public class HasuraUser {
                 ", isMobileOtpLoginEnabled=" + isMobileOtpLoginEnabled +
                 '}';
     }
+
 }

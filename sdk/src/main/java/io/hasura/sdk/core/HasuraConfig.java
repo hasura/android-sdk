@@ -6,21 +6,38 @@ package io.hasura.sdk.core;
 
 public class HasuraConfig {
 
-    public static String PROJECT_NAME;
+    public static class SDK {
+        public static Boolean isLoggingEnabled = false;
+
+        public static void enableLogs() {
+            isLoggingEnabled = true;
+        }
+    }
+
+    static String BASE_DOMAIN;
+    static String PROTOCOL;
+    static String API_VERSION;
+
+    public static String getCustomServiceURL(String serviceName) {
+        return PROTOCOL + "://" + serviceName + "." + BASE_DOMAIN;
+    }
 
     public static class BASE_URL {
-        public static final String AUTH = "https://auth." + PROJECT_NAME + ".hasura-app.io";
-        public static final String DB = "https://data." + PROJECT_NAME + ".hasura-app.io";
+        public static final String AUTH = PROTOCOL + "://auth." + BASE_DOMAIN;
+        public static final String DB = PROTOCOL + "://data." + BASE_DOMAIN;
     }
 
     public static class URL {
-        public static final String VERSION = "v1";
-        public static final String LOGIN_MOBILE = "/otp-otpLogin";
+
+        public static final String QUERY = "/" + API_VERSION + "/query";
+        public static final String QUERY_TEMPLATE = "/" + API_VERSION + "/template";
+
+        public static final String LOGIN_MOBILE = "/otp-login";
         public static final String SIGNUP_MOBILE = "/otp-signup";
-        public static final String LOGIN = "/otpLogin";
+        public static final String LOGIN = "/login";
         public static final String SIGNUP = "/signup";
         public static final String LOGOUT = "/user/logout";
-        public static final String QUERY = VERSION + "/query";
+
         public static final String ACCOUNT_INFO = "/user/account/info";
     }
 }
