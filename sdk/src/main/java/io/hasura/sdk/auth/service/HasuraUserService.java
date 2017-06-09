@@ -22,13 +22,12 @@ import io.hasura.sdk.auth.response.LogoutResponse;
 import io.hasura.sdk.core.Call;
 import io.hasura.sdk.core.HasuraConfig;
 import io.hasura.sdk.core.HasuraTokenInterceptor;
-import okhttp3.OkHttpClient;
 
 /**
  * Created by jaison on 31/05/17.
  */
 
-public class HasuraUserService extends HasuraApiService {
+public class HasuraUserService extends HasuraHttpService {
 
     public HasuraUserService(HasuraTokenInterceptor tokenInterceptor) {
         super(HasuraConfig.BASE_URL.AUTH, tokenInterceptor);

@@ -2,6 +2,8 @@ package io.hasura.sdk.core;
 
 import android.content.Context;
 
+import java.util.HashMap;
+
 import io.hasura.sdk.auth.HasuraUser;
 
 /**
@@ -42,6 +44,11 @@ public class Hasura {
 
     public Hasura enableLogs() {
         HasuraConfig.SDK.enableLogs();
+        return this;
+    }
+
+    public Hasura setCustomDefaultRole(String role) {
+        HasuraConfig.USER.DEFAULT_ROLE = role;
         return this;
     }
 

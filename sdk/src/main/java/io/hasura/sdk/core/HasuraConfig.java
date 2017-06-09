@@ -6,6 +6,10 @@ package io.hasura.sdk.core;
 
 public class HasuraConfig {
 
+    public static class USER {
+        public static String DEFAULT_ROLE = "user";
+    }
+
     public static class SDK {
         public static Boolean isLoggingEnabled = false;
 

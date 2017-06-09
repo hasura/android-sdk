@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by jaison on 23/01/17.
  */
 
-public class SelectTodoQuery {
+public class SelectTodoRequest {
 
     @SerializedName("type")
     String type = "select";
@@ -14,7 +14,7 @@ public class SelectTodoQuery {
     @SerializedName("args")
     Args args;
 
-    public SelectTodoQuery(Integer userId) {
+    public SelectTodoRequest(Integer userId) {
         args = new Args();
         args.where = new Where();
         args.where.userId = userId;

@@ -2,26 +2,25 @@ package io.hasura.android_sdk.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 /**
  * Created by jaison on 23/01/17.
  */
 
-public class UpdateTodoQuery {
+public class DeleteTodoRequest {
 
     @SerializedName("type")
-    String type = "update";
+    String type = "delete";
 
     @SerializedName("args")
     Args args;
 
-    public UpdateTodoQuery(Integer todoId, Integer userId, String title, Boolean completed) {
+    public DeleteTodoRequest(Integer todoId, Integer userId) {
         args = new Args();
         args.where = new Where();
         args.where.id = todoId;
         args.where.userId = userId;
-        args.set = new Set();
-        args.set.title = title;
-        args.set.completed = completed;
     }
 
     class Args {
@@ -31,14 +30,6 @@ public class UpdateTodoQuery {
 
         @SerializedName("where")
         Where where;
-
-        @SerializedName("$set")
-        Set set;
-
-        @SerializedName("returning")
-        String[]  returning = {
-                "id","completed","title"
-        };
     }
 
     class Where {
@@ -47,13 +38,5 @@ public class UpdateTodoQuery {
 
         @SerializedName("id")
         Integer id;
-    }
-
-    class Set {
-        @SerializedName("title")
-        String title;
-
-        @SerializedName("completed")
-        Boolean completed;
     }
 }

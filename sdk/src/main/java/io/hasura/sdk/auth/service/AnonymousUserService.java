@@ -30,7 +30,7 @@ import io.hasura.sdk.core.HasuraException;
  * Created by jaison on 31/05/17.
  */
 
-public class AnonymousUserService extends HasuraApiService {
+public class AnonymousUserService extends HasuraHttpService {
 
     private static AnonymousUserService instance;
 

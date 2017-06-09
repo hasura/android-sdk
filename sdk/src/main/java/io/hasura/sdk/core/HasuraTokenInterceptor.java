@@ -10,9 +10,18 @@ import okhttp3.Response;
 public class HasuraTokenInterceptor implements Interceptor {
 
     private String authToken;
+    private String role;
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getRole() {
+        return role;
     }
 
     @Override
@@ -20,6 +29,7 @@ public class HasuraTokenInterceptor implements Interceptor {
         Request request = chain.request();
         Request newRequest = request.newBuilder()
                 .addHeader("Authorization", "Bearer " + authToken)
+                .addHeader("X-Hasura-Role", role)
                 .build();
         return chain.proceed(newRequest);
     }

@@ -79,6 +79,7 @@ public class HasuraSessionStore {
         hasuraUser.setRoles(roles);
         hasuraUser.setPassword(password);
         hasuraUser.setAccessToken(accesstoken);
+        hasuraUser.setSelectedRole(HasuraConfig.USER.DEFAULT_ROLE);
 
         if(isMobileOtpLoginEnabled) {
             hasuraUser.enableMobileOtpLogin();

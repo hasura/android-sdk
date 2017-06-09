@@ -9,12 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import io.hasura.android_sdk.R;
-import io.hasura.android_sdk.models.TodoReturningResponse;
 import io.hasura.sdk.auth.HasuraUser;
-import io.hasura.sdk.auth.response.MessageResponse;
 import io.hasura.sdk.auth.responseListener.AuthResponseListener;
-import io.hasura.sdk.core.Call;
-import io.hasura.sdk.core.Callback;
 import io.hasura.sdk.core.Hasura;
 import io.hasura.sdk.core.HasuraException;
 
@@ -61,40 +57,6 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
             Log.i(TAG,"Logged in present: " + Hasura.currentUser().toString());
             ToDoActivity.startActivity(this);
         }
-
-        Call<TodoReturningResponse,HasuraException> call1 = user.customService("serviceName")
-                .POST("/something/blah")
-                .setParams("key","value")
-                .setParams("key","value")
-                .build();
-
-        call1.executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
-            @Override
-            public void onSuccess(TodoReturningResponse response) {
-
-            }
-
-            @Override
-            public void onFailure(HasuraException e) {
-
-            }
-        });
-
-        Call<MessageResponse, HasuraException> call3 = user.queryTemplateService("qTempName")
-                .setParams("key","value")
-                .build();
-        call3.executeAsync(new Callback<MessageResponse, HasuraException>() {
-            @Override
-            public void onSuccess(MessageResponse response) {
-
-            }
-
-            @Override
-            public void onFailure(HasuraException e) {
-
-            }
-        });
-
     }
 
     private void signUp() {

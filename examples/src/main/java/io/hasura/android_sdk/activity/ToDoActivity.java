@@ -15,12 +15,13 @@ import android.widget.EditText;
 import java.util.List;
 
 import io.hasura.android_sdk.R;
-import io.hasura.android_sdk.models.DeleteTodoQuery;
-import io.hasura.android_sdk.models.InsertTodoQuery;
-import io.hasura.android_sdk.models.SelectTodoQuery;
+import io.hasura.android_sdk.models.DeleteTodoRequest;
+import io.hasura.android_sdk.models.InsertTodoRequest;
+import io.hasura.android_sdk.models.SelectTodoRequest;
 import io.hasura.android_sdk.models.TodoRecord;
 import io.hasura.android_sdk.models.TodoReturningResponse;
-import io.hasura.android_sdk.models.UpdateTodoQuery;
+import io.hasura.android_sdk.models.UpdateTodoRequest;
+import io.hasura.sdk.auth.HasuraQuery;
 import io.hasura.sdk.auth.HasuraUser;
 import io.hasura.sdk.auth.responseListener.LogoutResponseListener;
 import io.hasura.sdk.core.Call;
@@ -68,33 +69,39 @@ public class ToDoActivity extends BaseActivity {
 
     private void fetchTodosFromDB() {
         showProgressIndicator();
-        Call<List<TodoRecord>, HasuraException> call = user.dataService()
-                .setRequestBody(new SelectTodoQuery(user.getId()))
-                .build();
-        call.executeAsync(new Callback<List<TodoRecord>, HasuraException>() {
-            @Override
-            public void onSuccess(List<TodoRecord> response) {
-                hideProgressIndicator();
-                adapter.setData(response);
-            }
 
-            @Override
-            public void onFailure(HasuraException e) {
-                hideProgressIndicator();
-                handleError(e);
-            }
-        });
+        user.getQueryBuilder()
+                .useDataService()
+                .setRequestBody(new SelectTodoRequest(user.getId()))
+                .expectResponseTypeArrayOf(TodoRecord.class)
+                .build()
+                .executeAsync(new Callback<List<TodoRecord>, HasuraException>() {
+                    @Override
+                    public void onSuccess(List<TodoRecord> response) {
+                        hideProgressIndicator();
+                        adapter.setData(response);
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        hideProgressIndicator();
+                        handleError(e);
+                    }
+                });
     }
 
     private void toggleTodo(final int recyclerViewPostion, final TodoRecord record) {
         showProgressIndicator();
         record.setCompleted(!record.getCompleted());
-        UpdateTodoQuery query = new UpdateTodoQuery(record.getId(), user.getId(), record.getTitle(), record.getCompleted());
+        UpdateTodoRequest request = new UpdateTodoRequest(record.getId(), user.getId(), record.getTitle(), record.getCompleted());
 
-        Call<TodoReturningResponse, HasuraException> call = user.dataService()
-                .setRequestBody(query)
+        HasuraQuery<TodoReturningResponse> updateTodoQuery = user.getQueryBuilder()
+                .useDataService()
+                .setRequestBody(request)
+                .expectResponseOfType(TodoReturningResponse.class)
                 .build();
-        call.executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
+
+        updateTodoQuery.executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
             @Override
             public void onSuccess(TodoReturningResponse response) {
                 hideProgressIndicator();
@@ -111,44 +118,50 @@ public class ToDoActivity extends BaseActivity {
 
     private void deleteTodo(final int recyclerViewPosition, final TodoRecord record) {
         showProgressIndicator();
-        Call<TodoReturningResponse, HasuraException> call = user.dataService()
-                .setRequestBody(new DeleteTodoQuery(record.getId(), user.getId()))
-                .build();
-        call.executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
-            @Override
-            public void onSuccess(TodoReturningResponse response) {
-                hideProgressIndicator();
-                adapter.deleteData(recyclerViewPosition, record);
-            }
 
-            @Override
-            public void onFailure(HasuraException e) {
-                hideProgressIndicator();
-                handleError(e);
-            }
-        });
+        user.getQueryBuilder()
+                .useDataService()
+                .setRequestBody(new DeleteTodoRequest(record.getId(), user.getId()))
+                .expectResponseOfType(TodoReturningResponse.class)
+                .build()
+                .executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(TodoReturningResponse response) {
+                        hideProgressIndicator();
+                        adapter.deleteData(recyclerViewPosition, record);
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        hideProgressIndicator();
+                        handleError(e);
+                    }
+                });
     }
 
     private void addATodo(final String description) {
         showProgressIndicator();
-        Call<TodoReturningResponse, HasuraException> call = user.dataService()
-                .setRequestBody(new InsertTodoQuery(description, user.getId()))
-                .build();
-        call.executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
-            @Override
-            public void onSuccess(TodoReturningResponse response) {
-                hideProgressIndicator();
-                TodoRecord record = new TodoRecord(description, user.getId(), false);
-                record.setId(response.getTodoRecords().get(0).getId());
-                adapter.addData(record);
-            }
 
-            @Override
-            public void onFailure(HasuraException e) {
-                hideProgressIndicator();
-                handleError(e);
-            }
-        });
+        user.getQueryBuilder()
+                .useDataService()
+                .setRequestBody(new InsertTodoRequest(description, user.getId()))
+                .expectResponseOfType(TodoReturningResponse.class)
+                .build()
+                .executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(TodoReturningResponse response) {
+                        hideProgressIndicator();
+                        TodoRecord record = new TodoRecord(description, user.getId(), false);
+                        record.setId(response.getTodoRecords().get(0).getId());
+                        adapter.addData(record);
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        hideProgressIndicator();
+                        handleError(e);
+                    }
+                });
     }
 
     @Override

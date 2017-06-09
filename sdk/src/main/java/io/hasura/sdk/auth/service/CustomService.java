@@ -14,7 +14,7 @@ import io.hasura.sdk.core.HasuraTokenInterceptor;
  * Created by jaison on 05/06/17.
  */
 
-public class CustomService extends HasuraApiService {
+public class CustomService extends HasuraHttpService {
 
     public CustomService(String serviceName, HasuraTokenInterceptor tokenInterceptor) {
         super(HasuraConfig.getCustomServiceURL(serviceName), tokenInterceptor);

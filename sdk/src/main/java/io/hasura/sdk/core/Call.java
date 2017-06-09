@@ -3,9 +3,9 @@ package io.hasura.sdk.core;
 import android.os.Handler;
 import android.os.Looper;
 
-import okhttp3.Request;
-
 import java.io.IOException;
+
+import okhttp3.Request;
 
 public class Call<T, E extends Exception> {
 
