@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
-import io.hasura.sdk.core.HasuraErrorCode;
-import io.hasura.sdk.core.HasuraException;
+import io.hasura.sdk.HasuraErrorCode;
+import io.hasura.sdk.HasuraException;
 
 public class BaseActivity extends AppCompatActivity {
 

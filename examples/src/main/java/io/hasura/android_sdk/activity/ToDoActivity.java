@@ -21,13 +21,12 @@ import io.hasura.android_sdk.models.SelectTodoRequest;
 import io.hasura.android_sdk.models.TodoRecord;
 import io.hasura.android_sdk.models.TodoReturningResponse;
 import io.hasura.android_sdk.models.UpdateTodoRequest;
-import io.hasura.sdk.auth.HasuraQuery;
-import io.hasura.sdk.auth.HasuraUser;
-import io.hasura.sdk.auth.responseListener.LogoutResponseListener;
-import io.hasura.sdk.core.Call;
-import io.hasura.sdk.core.Callback;
-import io.hasura.sdk.core.Hasura;
-import io.hasura.sdk.core.HasuraException;
+import io.hasura.sdk.HasuraQuery;
+import io.hasura.sdk.HasuraUser;
+import io.hasura.sdk.responseListener.LogoutResponseListener;
+import io.hasura.sdk.Callback;
+import io.hasura.sdk.Hasura;
+import io.hasura.sdk.HasuraException;
 
 
 public class ToDoActivity extends BaseActivity {

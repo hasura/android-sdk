@@ -8,11 +8,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import io.hasura.android_sdk.ApiInterface;
 import io.hasura.android_sdk.R;
-import io.hasura.sdk.auth.HasuraUser;
-import io.hasura.sdk.auth.responseListener.AuthResponseListener;
-import io.hasura.sdk.core.Hasura;
-import io.hasura.sdk.core.HasuraException;
+import io.hasura.sdk.HasuraUser;
+import io.hasura.sdk.responseListener.AuthResponseListener;
+import io.hasura.sdk.Hasura;
+import io.hasura.sdk.HasuraException;
+import io.hasura.sdk.retrofit.CustomService;
 
 
 public class AuthenticationActivity extends BaseActivity implements View.OnClickListener {
@@ -37,6 +39,9 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
                 .enableLogs()
                 .initialise(this);
 
+        CustomService<ApiInterface> cs = new CustomService.Builder()
+                .build(ApiInterface.class);
+
         setContentView(R.layout.activity_authentication);
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
@@ -57,6 +62,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
             Log.i(TAG,"Logged in present: " + Hasura.currentUser().toString());
             ToDoActivity.startActivity(this);
         }
+
     }
 
     private void signUp() {
