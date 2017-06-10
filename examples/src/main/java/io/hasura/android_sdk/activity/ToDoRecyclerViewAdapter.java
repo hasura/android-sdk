@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.hasura.android_sdk.R;
 import io.hasura.android_sdk.models.TodoRecord;
+import io.hasura.android_sdk.models.TodoReturningResponse;
 
 /**
  * Created by jaison on 11/01/17.

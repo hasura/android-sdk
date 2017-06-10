@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -77,6 +78,10 @@ public class ToDoActivity extends BaseActivity {
                 .executeAsync(new Callback<List<TodoRecord>, HasuraException>() {
                     @Override
                     public void onSuccess(List<TodoRecord> response) {
+
+                        for (TodoRecord record: response) {
+                            Log.i("ResponseRecord",record.toString());
+                        }
                         hideProgressIndicator();
                         adapter.setData(response);
                     }

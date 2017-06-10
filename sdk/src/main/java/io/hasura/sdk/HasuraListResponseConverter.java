@@ -1,37 +1,45 @@
 package io.hasura.sdk;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.hasura.sdk.response.AuthErrorResponse;
+import okhttp3.Response;
 
+/**
+ * Created by jaison on 10/06/17.
+ */
 
-public class HasuraResponseConverter<T> implements Converter<T, HasuraException> {
+public class HasuraListResponseConverter<K> implements Converter<List<K>, HasuraException> {
 
-    private Class<T> clazz;
-    private Type responseType;
+    private Class<K> clazz;
     private Gson gson = new GsonBuilder().create();
 
-    public HasuraResponseConverter(Class<T> clazz) {
+    public HasuraListResponseConverter(Class<K> clazz) {
         this.clazz = clazz;
     }
 
-    public HasuraResponseConverter(Type responseType) {
-        this.responseType = responseType;
-    }
-
     @Override
-    public T fromResponse(okhttp3.Response response) throws HasuraException {
+    public List<K> fromResponse(Response response) throws HasuraException {
         int code = response.code();
 
         try {
             if (code == 200) {
-                if (clazz != null)
-                    return Util.parseJson(gson, response, clazz);
-                else return Util.parseJson(gson, response, responseType);
+                return Util.parseJsonArray(gson,response, clazz);
             } else {
                 AuthErrorResponse err = Util.parseJson(gson, response, AuthErrorResponse.class);
                 HasuraErrorCode errCode = HasuraErrorCode.getFromCode(err.getCode());
@@ -42,6 +50,7 @@ public class HasuraResponseConverter<T> implements Converter<T, HasuraException>
         }
     }
 
+
     @Override
     public HasuraException fromIOException(IOException e) {
         return new HasuraException(HasuraErrorCode.CONNECTION_ERROR, e);
@@ -51,5 +60,4 @@ public class HasuraResponseConverter<T> implements Converter<T, HasuraException>
     public HasuraException castException(Exception e) {
         return (HasuraException) e;
     }
-
 }

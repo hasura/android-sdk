@@ -76,7 +76,7 @@ public class AnonymousUserService extends HasuraHttpService {
      */
     public Call<AuthResponse, HasuraException> login(AuthRequest r) {
         String jsonBody = gson.toJson(r);
-        Type respType = new TypeToken<LoginResponse>() {}.getType();
+        Type respType = new TypeToken<AuthResponse>() {}.getType();
         return makePostCall(HasuraConfig.URL.LOGIN, jsonBody, respType);
     }
 
