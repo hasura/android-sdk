@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import io.hasura.sdk.response.AuthErrorResponse;
+import io.hasura.sdk.response.HasuraErrorResponse;
 
 
 public class HasuraResponseConverter<T> implements Converter<T, HasuraException> {
@@ -33,7 +33,7 @@ public class HasuraResponseConverter<T> implements Converter<T, HasuraException>
                     return Util.parseJson(gson, response, clazz);
                 else return Util.parseJson(gson, response, responseType);
             } else {
-                AuthErrorResponse err = Util.parseJson(gson, response, AuthErrorResponse.class);
+                HasuraErrorResponse err = Util.parseJson(gson, response, HasuraErrorResponse.class);
                 HasuraErrorCode errCode = HasuraErrorCode.getFromCode(err.getCode());
                 throw new HasuraException(errCode, err.getMessage());
             }

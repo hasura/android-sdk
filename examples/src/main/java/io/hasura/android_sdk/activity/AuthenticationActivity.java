@@ -10,14 +10,12 @@ import android.widget.EditText;
 
 import io.hasura.android_sdk.ApiInterface;
 import io.hasura.android_sdk.R;
+import io.hasura.custom_service_retrofit.RetrofitServiceBuilder;
+import io.hasura.sdk.CustomService;
 import io.hasura.sdk.HasuraUser;
 import io.hasura.sdk.responseListener.AuthResponseListener;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraException;
-import io.hasura.sdk.retrofit.CustomService;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
 public class AuthenticationActivity extends BaseActivity implements View.OnClickListener {
@@ -41,11 +39,19 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
         CustomService<ApiInterface> cs = new CustomService.Builder()
                 .serviceName("data")
                 .baseUrl("https://data.hello70.hasura-app.io")
+                .setServiceBuilder(RetrofitServiceBuilder.create())
+                .build(ApiInterface.class);
+
+        CustomService<ApiInterface> cs2 = new CustomService.Builder()
+                .serviceName("data2")
+                .baseUrl("https://data.hello70.hasura-app.io")
+                .setServiceBuilder(RetrofitServiceBuilder.create())
                 .build(ApiInterface.class);
 
         Hasura.setProjectName("hello70")
                 .enableLogs()
                 .addCustomService(cs)
+                .addCustomService(cs2)
                 .initialise(this);
 
 

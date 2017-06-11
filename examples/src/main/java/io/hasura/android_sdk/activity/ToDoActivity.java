@@ -23,6 +23,7 @@ import io.hasura.android_sdk.models.SelectTodoRequest;
 import io.hasura.android_sdk.models.TodoRecord;
 import io.hasura.android_sdk.models.TodoReturningResponse;
 import io.hasura.android_sdk.models.UpdateTodoRequest;
+import io.hasura.custom_service_retrofit.RetrofitCallbackHandler;
 import io.hasura.sdk.HasuraQuery;
 import io.hasura.sdk.HasuraUser;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
@@ -69,17 +70,22 @@ public class ToDoActivity extends BaseActivity {
         recyclerView.setAdapter(adapter);
 //        fetchTodosFromDB();
 
-        user.getCustomService("data", ApiInterface.class)
+        user.getCustomService("data2", ApiInterface.class)
                 .getTodos(new SelectTodoRequest(user.getId()))
-                .enqueue(new retrofit2.Callback<List<TodoRecord>>() {
+                .enqueue(new RetrofitCallbackHandler<List<TodoRecord>>() {
                     @Override
-                    public void onResponse(Call<List<TodoRecord>> call, Response<List<TodoRecord>> response) {
-
+                    public void onSuccess(List<TodoRecord> response) {
+                        for (TodoRecord record: response) {
+                            Log.i("ResponseRecord",record.toString());
+                        }
+                        hideProgressIndicator();
+                        adapter.setData(response);
                     }
 
                     @Override
-                    public void onFailure(Call<List<TodoRecord>> call, Throwable t) {
-
+                    public void onFailure(HasuraException e) {
+                        hideProgressIndicator();
+                        handleError(e);
                     }
                 });
     }

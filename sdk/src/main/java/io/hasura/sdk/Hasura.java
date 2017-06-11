@@ -4,8 +4,6 @@ import android.content.Context;
 
 import java.util.HashMap;
 
-import io.hasura.sdk.retrofit.CustomService;
-
 /**
  * Created by jaison on 23/01/17.
  */

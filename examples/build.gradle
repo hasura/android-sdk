@@ -27,5 +27,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
     compile project(':sdk')
+    compile project(':custom-service-retrofit')
     compile 'com.android.support:recyclerview-v7:25.3.1'
 }

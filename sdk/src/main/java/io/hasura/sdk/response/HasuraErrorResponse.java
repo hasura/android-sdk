@@ -1,6 +1,6 @@
 package io.hasura.sdk.response;
 
-public class AuthErrorResponse {
+public class HasuraErrorResponse {
     private String code;
     private String message;
 
