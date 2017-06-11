@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/custom-service-retrofit" />
             <option value="$PROJECT_DIR$/examples" />
             <option value="$PROJECT_DIR$/sdk" />
           </set>

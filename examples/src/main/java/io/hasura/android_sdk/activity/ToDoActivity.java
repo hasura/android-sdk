@@ -15,6 +15,7 @@ import android.widget.EditText;
 
 import java.util.List;
 
+import io.hasura.android_sdk.ApiInterface;
 import io.hasura.android_sdk.R;
 import io.hasura.android_sdk.models.DeleteTodoRequest;
 import io.hasura.android_sdk.models.InsertTodoRequest;
@@ -28,6 +29,8 @@ import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.Callback;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraException;
+import retrofit2.Call;
+import retrofit2.Response;
 
 
 public class ToDoActivity extends BaseActivity {
@@ -64,7 +67,21 @@ public class ToDoActivity extends BaseActivity {
         });
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-        fetchTodosFromDB();
+//        fetchTodosFromDB();
+
+        user.getCustomService("data", ApiInterface.class)
+                .getTodos(new SelectTodoRequest(user.getId()))
+                .enqueue(new retrofit2.Callback<List<TodoRecord>>() {
+                    @Override
+                    public void onResponse(Call<List<TodoRecord>> call, Response<List<TodoRecord>> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<TodoRecord>> call, Throwable t) {
+
+                    }
+                });
     }
 
     private void fetchTodosFromDB() {

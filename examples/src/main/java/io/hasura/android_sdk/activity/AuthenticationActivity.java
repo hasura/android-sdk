@@ -15,6 +15,9 @@ import io.hasura.sdk.responseListener.AuthResponseListener;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraException;
 import io.hasura.sdk.retrofit.CustomService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class AuthenticationActivity extends BaseActivity implements View.OnClickListener {
@@ -35,12 +38,16 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        CustomService<ApiInterface> cs = new CustomService.Builder()
+                .serviceName("data")
+                .baseUrl("https://data.hello70.hasura-app.io")
+                .build(ApiInterface.class);
+
         Hasura.setProjectName("hello70")
                 .enableLogs()
+                .addCustomService(cs)
                 .initialise(this);
 
-        CustomService<ApiInterface> cs = new CustomService.Builder()
-                .build(ApiInterface.class);
 
         setContentView(R.layout.activity_authentication);
         username = (EditText) findViewById(R.id.username);

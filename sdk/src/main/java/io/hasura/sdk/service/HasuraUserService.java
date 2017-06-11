@@ -48,7 +48,7 @@ public class HasuraUserService extends HasuraHttpService {
     public Call<GetCredentialsResponse, HasuraException> getCredentials() {
         Type respType = new TypeToken<GetCredentialsResponse>() {
         }.getType();
-        return makeGetCall("/user/account/info", respType);
+        return makeGetCall("user/account/info", respType);
     }
 
     /**
@@ -66,7 +66,7 @@ public class HasuraUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangePasswordResponse>() {
         }.getType();
-        return makePostCall("/user/password/change", jsonBody, respType);
+        return makePostCall("user/password/change", jsonBody, respType);
     }
 
     /**
@@ -84,7 +84,7 @@ public class HasuraUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangeEmailResponse>() {
         }.getType();
-        return makePostCall("/user/email/change", jsonBody, respType);
+        return makePostCall("user/email/change", jsonBody, respType);
     }
 
     /**
@@ -98,7 +98,7 @@ public class HasuraUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangeMobileResponse>() {
         }.getType();
-        return makePostCall("/user/mobile/change", jsonBody, respType);
+        return makePostCall("user/mobile/change", jsonBody, respType);
     }
 
 
@@ -111,7 +111,7 @@ public class HasuraUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<CheckPasswordResponse>() {
         }.getType();
-        return makePostCall("/user/password/verify", jsonBody, respType);
+        return makePostCall("user/password/verify", jsonBody, respType);
     }
 
 
@@ -126,7 +126,7 @@ public class HasuraUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<DeleteAccountResponse>() {
         }.getType();
-        return makePostCall("/user/account/delete", jsonBody, respType);
+        return makePostCall("user/account/delete", jsonBody, respType);
     }
 
     /**
@@ -140,7 +140,7 @@ public class HasuraUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ChangeUserNameResponse>() {
         }.getType();
-        return makePostCall("/user/account/change-username", jsonBody, respType);
+        return makePostCall("user/account/change-username", jsonBody, respType);
     }
 
 
@@ -153,7 +153,7 @@ public class HasuraUserService extends HasuraHttpService {
     public Call<LogoutResponse, HasuraException> logout() {
         Type respType = new TypeToken<LogoutResponse>() {
         }.getType();
-        return makeGetCall("/user/logout", respType);
+        return makeGetCall("user/logout", respType);
     }
 
 }

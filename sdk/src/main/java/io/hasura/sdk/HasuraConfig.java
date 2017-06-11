@@ -1,5 +1,7 @@
 package io.hasura.sdk;
 
+import android.support.annotation.Nullable;
+
 /**
  * Created by jaison on 23/01/17.
  */
@@ -22,10 +24,6 @@ public class HasuraConfig {
     static String PROTOCOL;
     static String API_VERSION;
 
-    public static String getCustomServiceURL(String serviceName) {
-        return PROTOCOL + "://" + serviceName + "." + BASE_DOMAIN;
-    }
-
     public static class BASE_URL {
         public static final String AUTH = PROTOCOL + "://auth." + BASE_DOMAIN;
         public static final String DB = PROTOCOL + "://data." + BASE_DOMAIN;
@@ -33,15 +31,15 @@ public class HasuraConfig {
 
     public static class URL {
 
-        public static final String QUERY = "/" + API_VERSION + "/query";
-        public static final String QUERY_TEMPLATE = "/" + API_VERSION + "/template";
+        public static final String QUERY = API_VERSION + "/query";
+        public static final String QUERY_TEMPLATE = API_VERSION + "/template";
 
-        public static final String LOGIN_MOBILE = "/otp-login";
-        public static final String SIGNUP_MOBILE = "/otp-signup";
-        public static final String LOGIN = "/login";
-        public static final String SIGNUP = "/signup";
-        public static final String LOGOUT = "/user/logout";
+        public static final String LOGIN_MOBILE = "otp-login";
+        public static final String SIGNUP_MOBILE = "otp-signup";
+        public static final String LOGIN = "login";
+        public static final String SIGNUP = "signup";
+        public static final String LOGOUT = "user/logout";
 
-        public static final String ACCOUNT_INFO = "/user/account/info";
+        public static final String ACCOUNT_INFO = "user/account/info";
     }
 }

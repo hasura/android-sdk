@@ -147,6 +147,10 @@ public class HasuraUser {
         return userApiService;
     }
 
+    public <K> K getCustomService(String serviceName, Class<K> clzz) {
+        return clzz.cast(Hasura.getInstance().getService(serviceName).getInterface(hasuraTokenInterceptor));
+    }
+
     public HasuraQuery.Builder getQueryBuilder() {
         return new HasuraQuery.Builder(hasuraTokenInterceptor);
     }

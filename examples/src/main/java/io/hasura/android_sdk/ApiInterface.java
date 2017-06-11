@@ -8,6 +8,7 @@ import io.hasura.android_sdk.models.TodoReturningResponse;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 
 /**
  * Created by jaison on 09/06/17.
@@ -15,6 +16,6 @@ import retrofit2.http.GET;
 
 public interface ApiInterface {
 
-    @GET("ads")
+    @POST("v1/query")
     Call<List<TodoRecord>> getTodos(@Body SelectTodoRequest request);
 }

@@ -126,7 +126,7 @@ public class AnonymousUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ConfirmMobileResponse>() {
         }.getType();
-        return makePostCall("/mobile/confirm", jsonBody, respType);
+        return makePostCall("mobile/confirm", jsonBody, respType);
     }
 
 
@@ -143,7 +143,7 @@ public class AnonymousUserService extends HasuraHttpService {
         String jsonBody = gson.toJson(r);
         Type respType = new TypeToken<ResendOTPResponse>() {
         }.getType();
-        return makePostCall("/mobile/resend-otp", jsonBody, respType);
+        return makePostCall("mobile/resend-otp", jsonBody, respType);
     }
 
 

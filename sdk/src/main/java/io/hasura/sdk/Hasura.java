@@ -2,6 +2,8 @@ package io.hasura.sdk;
 
 import android.content.Context;
 
+import java.util.HashMap;
+
 import io.hasura.sdk.retrofit.CustomService;
 
 /**
@@ -14,6 +16,12 @@ public class Hasura {
     private String protocol;
     private String apiVersion;
 
+    private static Hasura instance;
+
+    public static Hasura getInstance() {
+        return instance;
+    }
+
     public static HasuraUser currentUser() {
         return HasuraSessionStore.getSavedUser();
     }
@@ -25,11 +33,15 @@ public class Hasura {
     }
 
     public static Hasura setProjectName(String projectName) {
-        return new Hasura(projectName + ".hasura-app.io");
+        instance = new Hasura(projectName + ".hasura-app.io/");
+        return instance;
     }
 
     public static Hasura setCustomBaseDomain(String baseDomain) {
-        return new Hasura(baseDomain);
+        if (baseDomain.charAt(baseDomain.length() - 1) != '/')
+            instance = new Hasura(baseDomain + "/");
+        else instance = new Hasura(baseDomain);
+        return instance;
     }
 
     //TODO: another name -enableInSecureConnection
@@ -60,7 +72,15 @@ public class Hasura {
         HasuraSessionStore.initialise(context);
     }
 
-    public <K> void addCustomService(CustomService<K> cs) {
+    HashMap<String, CustomService> customServiceMap = new HashMap<>();
 
+    public <K> Hasura addCustomService(CustomService<K> cs) {
+        customServiceMap.put(cs.getServiceName(), cs);
+        return this;
+    }
+
+    public <K> CustomService<K> getService(String serviceName) {
+        CustomService<K> cs = customServiceMap.get(serviceName);
+        return cs;
     }
 }

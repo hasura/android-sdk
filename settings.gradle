@@ -1,1 +1,1 @@
-include ':examples', ':sdk'
+include ':examples', ':sdk', ':custom-service-retrofit'
