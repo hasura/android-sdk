@@ -5,10 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Android_SDK.iml" filepath="$PROJECT_DIR$/Android_SDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/android-sdk.iml" filepath="$PROJECT_DIR$/android-sdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/custom-service-retrofit/custom-service-retrofit.iml" filepath="$PROJECT_DIR$/custom-service-retrofit/custom-service-retrofit.iml" />
-      <module fileurl="file://$PROJECT_DIR$/custom-service-retrofit/custom-service-retrofit.iml" filepath="$PROJECT_DIR$/custom-service-retrofit/custom-service-retrofit.iml" />
       <module fileurl="file://$PROJECT_DIR$/examples/examples.iml" filepath="$PROJECT_DIR$/examples/examples.iml" />
-      <module fileurl="file://$PROJECT_DIR$/examples/examples.iml" filepath="$PROJECT_DIR$/examples/examples.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sdk/sdk.iml" filepath="$PROJECT_DIR$/sdk/sdk.iml" />
       <module fileurl="file://$PROJECT_DIR$/sdk/sdk.iml" filepath="$PROJECT_DIR$/sdk/sdk.iml" />
     </modules>
   </component>
