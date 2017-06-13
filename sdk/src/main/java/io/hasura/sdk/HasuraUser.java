@@ -304,6 +304,7 @@ public class HasuraUser {
             return otherRoleUsers.get(role);
         }
         HasuraUser newUser = new HasuraUser(this);
+        newUser.setSelectedRole(role);
         otherRoleUsers.put(role, newUser);
         return newUser;
     }
