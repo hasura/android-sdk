@@ -29,11 +29,11 @@ public class HasuraClient {
         return currentUser.useCustomService(clzz);
     }
 
-    public HasuraQuery.Builder useDataService() {
+    public static HasuraQuery.Builder useDataService() {
         return currentUser.useDataService();
     }
 
-    public HasuraQuery.Builder useQueryTemplateService(String templateName) {
+    public static HasuraQuery.Builder useQueryTemplateService(String templateName) {
         return currentUser.useQueryTemplateService(templateName);
 
     }
