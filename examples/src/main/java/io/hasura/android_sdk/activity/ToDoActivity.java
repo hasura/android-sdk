@@ -13,12 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.List;
 
-import io.hasura.android_sdk.ApiInterface;
 import io.hasura.android_sdk.R;
 import io.hasura.android_sdk.models.DeleteTodoRequest;
 import io.hasura.android_sdk.models.InsertTodoRequest;
@@ -26,13 +22,11 @@ import io.hasura.android_sdk.models.SelectTodoRequest;
 import io.hasura.android_sdk.models.TodoRecord;
 import io.hasura.android_sdk.models.TodoReturningResponse;
 import io.hasura.android_sdk.models.UpdateTodoRequest;
-import io.hasura.custom_service_retrofit.RetrofitCallbackHandler;
+import io.hasura.sdk.HasuraClient;
 import io.hasura.sdk.HasuraQuery;
-import io.hasura.sdk.HasuraTokenInterceptor;
 import io.hasura.sdk.HasuraUser;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.Callback;
-import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraException;
 
 public class ToDoActivity extends BaseActivity {
@@ -52,7 +46,7 @@ public class ToDoActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_to_do);
-        user = Hasura.currentUser();
+        user = HasuraClient.currentUser();
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -79,7 +73,7 @@ public class ToDoActivity extends BaseActivity {
         user.useDataService()
                 .setRequestBody(new SelectTodoRequest(user.getId()))
                 .expectResponseTypeArrayOf(TodoRecord.class)
-                .executeAsync(new Callback<List<TodoRecord>, HasuraException>() {
+                .enqueue(new Callback<List<TodoRecord>, HasuraException>() {
                     @Override
                     public void onSuccess(List<TodoRecord> response) {
 
@@ -108,7 +102,7 @@ public class ToDoActivity extends BaseActivity {
                 .setRequestBody(request)
                 .expectResponseType(TodoReturningResponse.class);
 
-        updateTodoQuery.executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
+        updateTodoQuery.enqueue(new Callback<TodoReturningResponse, HasuraException>() {
             @Override
             public void onSuccess(TodoReturningResponse response) {
                 hideProgressIndicator();
@@ -129,7 +123,7 @@ public class ToDoActivity extends BaseActivity {
         user.useDataService()
                 .setRequestBody(new DeleteTodoRequest(record.getId(), user.getId()))
                 .expectResponseType(TodoReturningResponse.class)
-                .executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
+                .enqueue(new Callback<TodoReturningResponse, HasuraException>() {
                     @Override
                     public void onSuccess(TodoReturningResponse response) {
                         hideProgressIndicator();
@@ -150,7 +144,7 @@ public class ToDoActivity extends BaseActivity {
         user.useDataService()
                 .setRequestBody(new InsertTodoRequest(description, user.getId()))
                 .expectResponseType(TodoReturningResponse.class)
-                .executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
+                .enqueue(new Callback<TodoReturningResponse, HasuraException>() {
                     @Override
                     public void onSuccess(TodoReturningResponse response) {
                         hideProgressIndicator();

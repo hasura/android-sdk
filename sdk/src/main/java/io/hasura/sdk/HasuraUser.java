@@ -14,6 +14,7 @@ import io.hasura.sdk.responseListener.AuthResponseListener;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.responseListener.MobileConfirmationResponseListener;
 import io.hasura.sdk.responseListener.OtpStatusListener;
+import io.hasura.sdk.responseListener.SignUpResponseListener;
 import io.hasura.sdk.service.AnonymousUserService;
 import io.hasura.sdk.service.HasuraUserService;
 
@@ -21,181 +22,7 @@ import io.hasura.sdk.service.HasuraUserService;
  * Created by jaison on 30/05/17.
  */
 
-/*
-* TODO:
-* 1. signup to have a awaiting verification method
-* 2. new method called confirmMobileAndLogin
-* 3. remove confirm email
-* 4. mobileOtpSignUp
-* */
-
 public class HasuraUser {
-
-
-    private AnonymousUserService anonApiService = AnonymousUserService.getInstance();
-
-    public void signUp(final AuthResponseListener listener) {
-        if (isMobileOtpLoginEnabled) {
-            anonApiService.signUpForMobileOtp(getAuthRequest())
-                    .executeAsync(new AuthResponseCallbackHandler(listener));
-        } else {
-            anonApiService.signUp(getAuthRequest())
-                    .executeAsync(new AuthResponseCallbackHandler(listener));
-        }
-    }
-
-    public void sendOtpToMobile(final OtpStatusListener listener) {
-        anonApiService.sendOtpToMobile(getAuthRequest())
-                .executeAsync(new Callback<MessageResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(MessageResponse response) {
-                        if (listener != null) {
-                            listener.onSuccess();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
-    public void otpLogin(String otp, final AuthResponseListener listener) {
-        AuthRequest request = new AuthRequest(mobile, otp);
-        anonApiService.otpLogin(request)
-                .executeAsync(new AuthResponseCallbackHandler(listener));
-    }
-
-    public void login(final AuthResponseListener listener) {
-        anonApiService.login(getAuthRequest())
-                .executeAsync(new AuthResponseCallbackHandler(listener));
-    }
-
-    public void socialLogin(HasuraSocialLoginType type, String token, final AuthResponseListener listener) {
-        anonApiService.socialAuth(new SocialLoginRequest(type.getCode(), token))
-                .executeAsync(new AuthResponseCallbackHandler(listener));
-    }
-
-    public void confirmMobile(String otp, final MobileConfirmationResponseListener listener) {
-        anonApiService.confirmMobile(mobile, otp)
-                .executeAsync(new Callback<MessageResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(MessageResponse response) {
-                        if (listener != null) {
-                            listener.onSuccess();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
-    public void resendOtpForMobileConfirmation(final OtpStatusListener listener) {
-        anonApiService.resendOTP(mobile)
-                .executeAsync(new Callback<MessageResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(MessageResponse response) {
-                        if (listener != null) {
-                            listener.onSuccess();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
-    private class AuthResponseCallbackHandler implements Callback<AuthResponse, HasuraException> {
-
-        AuthResponseListener listener;
-
-        AuthResponseCallbackHandler(AuthResponseListener listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        public void onSuccess(AuthResponse response) {
-            setId(response.getId());
-            setRoles(response.getRoles());
-            setAuthToken(response.getAuthToken());
-            setAccessToken(response.getAccess_token());
-            setSelectedRole(HasuraConfig.USER.DEFAULT_ROLE);
-
-            HasuraSessionStore.saveUser(HasuraUser.this);
-
-            if (listener != null) {
-                listener.onSuccess(HasuraUser.this);
-            }
-        }
-
-        @Override
-        public void onFailure(HasuraException e) {
-            if (listener != null) {
-                listener.onFailure(e);
-            }
-        }
-    }
-
-    private HasuraTokenInterceptor hasuraTokenInterceptor = new HasuraTokenInterceptor();
-    private HasuraUserService userApiService;
-
-    private HasuraUserService auth() {
-        if (userApiService == null) {
-            userApiService = new HasuraUserService(hasuraTokenInterceptor);
-        }
-        return userApiService;
-    }
-
-    public <K> K useCustomService(Class<K> clzz) {
-        Log.i("Custom Service","GET -> " + clzz.getName() + hasuraTokenInterceptor.toString());
-        return clzz.cast(Hasura.getInstance().getService(clzz).getInterface(hasuraTokenInterceptor));
-    }
-
-    public HasuraQuery.Builder useDataService() {
-        return new HasuraQuery.Builder(hasuraTokenInterceptor).useDataService();
-    }
-
-    public HasuraQuery.Builder useQueryTemplateService(String templateName) {
-        return new HasuraQuery.Builder(hasuraTokenInterceptor).useQueryTemplate(templateName);
-    }
-
-    private AuthRequest getAuthRequest() {
-        return new AuthRequest(this.username, this.email, this.mobile, this.password);
-    }
-
-    public void logout(final LogoutResponseListener listener) {
-        auth().logout()
-                .executeAsync(new Callback<LogoutResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(LogoutResponse response) {
-                        HasuraSessionStore.deleteSavedUser();
-                        setAuthToken(null);
-                        if (listener != null) {
-                            listener.onSuccess();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
 
     private Integer id;
     private String email;
@@ -325,6 +152,207 @@ public class HasuraUser {
         return newUser;
     }
 
+    private AnonymousUserService anonApiService = AnonymousUserService.getInstance();
+
+    public void otpSignUp(final SignUpResponseListener listener) {
+        anonApiService.signUpForMobileOtp(getAuthRequest())
+                .enqueue(new SignUpResponseCallbackHandler(listener));
+    }
+
+    public void signUp(final SignUpResponseListener listener) {
+        anonApiService.signUp(getAuthRequest())
+                .enqueue(new SignUpResponseCallbackHandler(listener));
+    }
+
+    public void sendOtpToMobile(final OtpStatusListener listener) {
+        anonApiService.sendOtpToMobile(getAuthRequest())
+                .enqueue(new Callback<MessageResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(MessageResponse response) {
+                        if (listener != null) {
+                            listener.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        if (listener != null) {
+                            listener.onFailure(e);
+                        }
+                    }
+                });
+    }
+
+    public void otpLogin(String otp, final AuthResponseListener listener) {
+        AuthRequest request = new AuthRequest(mobile, otp);
+        anonApiService.otpLogin(request)
+                .enqueue(new AuthResponseCallbackHandler(listener));
+    }
+
+    public void login(final AuthResponseListener listener) {
+        anonApiService.login(getAuthRequest())
+                .enqueue(new AuthResponseCallbackHandler(listener));
+    }
+
+    public void socialLogin(HasuraSocialLoginType type, String token, final AuthResponseListener listener) {
+        anonApiService.socialAuth(new SocialLoginRequest(type.getCode(), token))
+                .enqueue(new AuthResponseCallbackHandler(listener));
+    }
+
+    public void confirmMobile(String otp, final MobileConfirmationResponseListener listener) {
+        anonApiService.confirmMobile(mobile, otp)
+                .enqueue(new Callback<MessageResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(MessageResponse response) {
+                        if (listener != null) {
+                            listener.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        if (listener != null) {
+                            listener.onFailure(e);
+                        }
+                    }
+                });
+    }
+
+    public void confirmMobileAndLogin(String otp, final AuthResponseListener listener) {
+        confirmMobile(otp, new MobileConfirmationResponseListener() {
+            @Override
+            public void onSuccess() {
+                login(listener);
+            }
+
+            @Override
+            public void onFailure(HasuraException e) {
+                listener.onFailure(e);
+            }
+        });
+    }
+
+    public void resendOtpForMobileConfirmation(final OtpStatusListener listener) {
+        anonApiService.resendOTP(mobile)
+                .enqueue(new Callback<MessageResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(MessageResponse response) {
+                        if (listener != null) {
+                            listener.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        if (listener != null) {
+                            listener.onFailure(e);
+                        }
+                    }
+                });
+    }
+
+    private class SignUpResponseCallbackHandler implements Callback<AuthResponse, HasuraException> {
+
+        SignUpResponseListener listener;
+
+        SignUpResponseCallbackHandler(SignUpResponseListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onSuccess(AuthResponse response) {
+            setId(response.getId());
+            setRoles(response.getRoles());
+            setAuthToken(response.getAuthToken());
+            setAccessToken(response.getAccess_token());
+            setSelectedRole(HasuraConfig.USER.DEFAULT_ROLE);
+            HasuraSessionStore.saveUser(HasuraUser.this);
+
+            if (response.getAuthToken() == null) {
+                if (listener != null) {
+                    listener.onSuccessAwaitingVerification(HasuraUser.this);
+                }
+            } else {
+                if (listener != null) {
+                    listener.onSuccess(HasuraUser.this);
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(HasuraException e) {
+            if (listener != null) {
+                listener.onFailure(e);
+            }
+        }
+    }
+
+    private class AuthResponseCallbackHandler implements Callback<AuthResponse, HasuraException> {
+
+        AuthResponseListener listener;
+
+        AuthResponseCallbackHandler(AuthResponseListener listener) {
+            this.listener = listener;
+        }
+
+        @Override
+        public void onSuccess(AuthResponse response) {
+            setId(response.getId());
+            setRoles(response.getRoles());
+            setAuthToken(response.getAuthToken());
+            setAccessToken(response.getAccess_token());
+            setSelectedRole(HasuraConfig.USER.DEFAULT_ROLE);
+
+            HasuraSessionStore.saveUser(HasuraUser.this);
+
+            if (listener != null) {
+                listener.onSuccess(HasuraUser.this);
+            }
+        }
+
+        @Override
+        public void onFailure(HasuraException e) {
+            if (listener != null) {
+                listener.onFailure(e);
+            }
+        }
+    }
+
+    private HasuraTokenInterceptor hasuraTokenInterceptor = new HasuraTokenInterceptor();
+    private HasuraUserService userApiService;
+
+    private HasuraUserService auth() {
+        if (userApiService == null) {
+            userApiService = new HasuraUserService(hasuraTokenInterceptor);
+        }
+        return userApiService;
+    }
+
+    private AuthRequest getAuthRequest() {
+        return new AuthRequest(this.username, this.email, this.mobile, this.password);
+    }
+
+    public void logout(final LogoutResponseListener listener) {
+        auth().logout()
+                .enqueue(new Callback<LogoutResponse, HasuraException>() {
+                    @Override
+                    public void onSuccess(LogoutResponse response) {
+                        HasuraSessionStore.deleteSavedUser();
+                        setAuthToken(null);
+                        if (listener != null) {
+                            listener.onSuccess();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(HasuraException e) {
+                        if (listener != null) {
+                            listener.onFailure(e);
+                        }
+                    }
+                });
+    }
+
     @Override
     public String toString() {
         return "HasuraUser {" +
@@ -338,6 +366,22 @@ public class HasuraUser {
                 ", accessToken='" + accessToken + '\'' +
                 ", isMobileOtpLoginEnabled=" + isMobileOtpLoginEnabled +
                 '}';
+    }
+
+
+
+
+    public <K> K useCustomService(Class<K> clzz) {
+        Log.i("Custom Service","GET -> " + clzz.getName() + hasuraTokenInterceptor.toString());
+        return clzz.cast(HasuraClient.getInstance().getService(clzz).getInterface(hasuraTokenInterceptor));
+    }
+
+    public HasuraQuery.Builder useDataService() {
+        return new HasuraQuery.Builder(hasuraTokenInterceptor).useDataService();
+    }
+
+    public HasuraQuery.Builder useQueryTemplateService(String templateName) {
+        return new HasuraQuery.Builder(hasuraTokenInterceptor).useQueryTemplate(templateName);
     }
 
 }

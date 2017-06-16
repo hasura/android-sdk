@@ -151,7 +151,7 @@ public class AnonymousUserService extends HasuraHttpService {
      * Confirm the email of an user - given an existing token.
      * <p>
      *     Once the user retrieves the token that is sent to the user's email, this method can be
-     *     used to confirm the email of the user with Hasura Auth.
+     *     used to confirm the email of the user with HasuraClient Auth.
      * </p>
      *
      * @param r {@link ConfirmEmailRequest}

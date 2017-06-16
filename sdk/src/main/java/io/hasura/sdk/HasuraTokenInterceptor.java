@@ -38,7 +38,7 @@ public class HasuraTokenInterceptor implements Interceptor {
         }
 
         if (role != null) {
-            builder.addHeader("X-Hasura-Role", role);
+            builder.addHeader("X-HasuraClient-Role", role);
         }
         return chain.proceed(builder.build());
     }

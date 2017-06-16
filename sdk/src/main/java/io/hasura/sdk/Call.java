@@ -22,7 +22,7 @@ public class Call<T, E extends Exception> {
         return rawCall.request();
     }
 
-    public void executeAsync(final Callback<T, E> callback) {
+    public void enqueue(final Callback<T, E> callback) {
         rawCall.enqueue(new okhttp3.Callback() {
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response rawResponse)
