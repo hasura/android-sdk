@@ -13,6 +13,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
 
 import io.hasura.android_sdk.ApiInterface;
@@ -25,14 +28,12 @@ import io.hasura.android_sdk.models.TodoReturningResponse;
 import io.hasura.android_sdk.models.UpdateTodoRequest;
 import io.hasura.custom_service_retrofit.RetrofitCallbackHandler;
 import io.hasura.sdk.HasuraQuery;
+import io.hasura.sdk.HasuraTokenInterceptor;
 import io.hasura.sdk.HasuraUser;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.Callback;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraException;
-import retrofit2.Call;
-import retrofit2.Response;
-
 
 public class ToDoActivity extends BaseActivity {
 
@@ -68,36 +69,16 @@ public class ToDoActivity extends BaseActivity {
         });
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-//        fetchTodosFromDB();
+        fetchTodosFromDB();
 
-        user.getCustomService("data2", ApiInterface.class)
-                .getTodos(new SelectTodoRequest(user.getId()))
-                .enqueue(new RetrofitCallbackHandler<List<TodoRecord>>() {
-                    @Override
-                    public void onSuccess(List<TodoRecord> response) {
-                        for (TodoRecord record: response) {
-                            Log.i("ResponseRecord",record.toString());
-                        }
-                        hideProgressIndicator();
-                        adapter.setData(response);
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        hideProgressIndicator();
-                        handleError(e);
-                    }
-                });
     }
 
     private void fetchTodosFromDB() {
         showProgressIndicator();
 
-        user.getQueryBuilder()
-                .useDataService()
+        user.useDataService()
                 .setRequestBody(new SelectTodoRequest(user.getId()))
                 .expectResponseTypeArrayOf(TodoRecord.class)
-                .build()
                 .executeAsync(new Callback<List<TodoRecord>, HasuraException>() {
                     @Override
                     public void onSuccess(List<TodoRecord> response) {
@@ -122,11 +103,10 @@ public class ToDoActivity extends BaseActivity {
         record.setCompleted(!record.getCompleted());
         UpdateTodoRequest request = new UpdateTodoRequest(record.getId(), user.getId(), record.getTitle(), record.getCompleted());
 
-        HasuraQuery<TodoReturningResponse> updateTodoQuery = user.getQueryBuilder()
+        HasuraQuery<TodoReturningResponse> updateTodoQuery = user
                 .useDataService()
                 .setRequestBody(request)
-                .expectResponseOfType(TodoReturningResponse.class)
-                .build();
+                .expectResponseType(TodoReturningResponse.class);
 
         updateTodoQuery.executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
             @Override
@@ -146,11 +126,9 @@ public class ToDoActivity extends BaseActivity {
     private void deleteTodo(final int recyclerViewPosition, final TodoRecord record) {
         showProgressIndicator();
 
-        user.getQueryBuilder()
-                .useDataService()
+        user.useDataService()
                 .setRequestBody(new DeleteTodoRequest(record.getId(), user.getId()))
-                .expectResponseOfType(TodoReturningResponse.class)
-                .build()
+                .expectResponseType(TodoReturningResponse.class)
                 .executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
                     @Override
                     public void onSuccess(TodoReturningResponse response) {
@@ -169,11 +147,9 @@ public class ToDoActivity extends BaseActivity {
     private void addATodo(final String description) {
         showProgressIndicator();
 
-        user.getQueryBuilder()
-                .useDataService()
+        user.useDataService()
                 .setRequestBody(new InsertTodoRequest(description, user.getId()))
-                .expectResponseOfType(TodoReturningResponse.class)
-                .build()
+                .expectResponseType(TodoReturningResponse.class)
                 .executeAsync(new Callback<TodoReturningResponse, HasuraException>() {
                     @Override
                     public void onSuccess(TodoReturningResponse response) {

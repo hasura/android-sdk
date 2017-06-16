@@ -1,5 +1,8 @@
 package io.hasura.sdk;
 
+import android.support.annotation.NonNull;
+import android.util.Log;
+
 import java.util.HashMap;
 
 /**
@@ -9,6 +12,9 @@ import java.util.HashMap;
 public class CustomService<K> {
 
     private K apiInterface;
+
+    private HashMap<HasuraTokenInterceptor, K> apiInterfaceMap = new HashMap<>();
+
     private String serviceName;
     private Class<K> clazz;
     private String baseUrl;
@@ -23,16 +29,20 @@ public class CustomService<K> {
         this.serviceBuilder = builder.serviceBuilder;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public Class<K> getClazz() {
+        return clazz;
     }
 
+    @NonNull
     public K getInterface(HasuraTokenInterceptor hasuraTokenInterceptor) {
-        if (apiInterface == null) {
-            this.apiInterface = serviceBuilder.getApiInterface(hasuraTokenInterceptor, baseUrl, additionalHeaders, clazz);
+        if (!apiInterfaceMap.containsKey(hasuraTokenInterceptor)) {
+            Log.i("ApiInterfaceNull",hasuraTokenInterceptor.toString());
+            K apiInterface = serviceBuilder.getApiInterface(hasuraTokenInterceptor, baseUrl, additionalHeaders, clazz);
+            apiInterfaceMap.put(hasuraTokenInterceptor, apiInterface);
+            return apiInterface;
         }
 
-        return apiInterface;
+        return apiInterfaceMap.get(hasuraTokenInterceptor);
     }
 
     public static final class Builder {
@@ -41,7 +51,6 @@ public class CustomService<K> {
         String baseUrl;
         HashMap<String, String> additionalHeaders;
         CustomServiceBuilder serviceBuilder;
-
 
         public Builder serviceName(String serviceName) {
             this.serviceName = serviceName;

@@ -1,5 +1,7 @@
 package io.hasura.sdk;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +21,16 @@ import io.hasura.sdk.service.HasuraUserService;
  * Created by jaison on 30/05/17.
  */
 
+/*
+* TODO:
+* 1. signup to have a awaiting verification method
+* 2. new method called confirmMobileAndLogin
+* 3. remove confirm email
+* 4. mobileOtpSignUp
+* */
+
 public class HasuraUser {
+
 
     private AnonymousUserService anonApiService = AnonymousUserService.getInstance();
 
@@ -147,12 +158,17 @@ public class HasuraUser {
         return userApiService;
     }
 
-    public <K> K getCustomService(String serviceName, Class<K> clzz) {
-        return clzz.cast(Hasura.getInstance().getService(serviceName).getInterface(hasuraTokenInterceptor));
+    public <K> K useCustomService(Class<K> clzz) {
+        Log.i("Custom Service","GET -> " + clzz.getName() + hasuraTokenInterceptor.toString());
+        return clzz.cast(Hasura.getInstance().getService(clzz).getInterface(hasuraTokenInterceptor));
     }
 
-    public HasuraQuery.Builder getQueryBuilder() {
-        return new HasuraQuery.Builder(hasuraTokenInterceptor);
+    public HasuraQuery.Builder useDataService() {
+        return new HasuraQuery.Builder(hasuraTokenInterceptor).useDataService();
+    }
+
+    public HasuraQuery.Builder useQueryTemplateService(String templateName) {
+        return new HasuraQuery.Builder(hasuraTokenInterceptor).useQueryTemplate(templateName);
     }
 
     private AuthRequest getAuthRequest() {

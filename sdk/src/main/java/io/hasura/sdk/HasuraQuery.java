@@ -90,53 +90,27 @@ public class HasuraQuery<T> extends Call<T, HasuraException> {
             return this;
         }
 
-        public <T> ListBuild<T> expectResponseTypeArrayOf(Class<T> clazz) {
-            return new ListBuild<>(clazz);
+        public <T> HasuraQuery<List<T>> expectResponseTypeArrayOf(Class<T> clazz) {
+            Request.Builder requestBuilder = new Request.Builder()
+                    .url(baseUrl);
+            if (requestbodyJSON != null) {
+                String jsonBody = gson.toJson(requestbodyJSON);
+                RequestBody reqBody = RequestBody.create(JSON, jsonBody);
+                requestBuilder.post(reqBody);
+            }
+            return new HasuraQuery<>(httpClient.newCall(requestBuilder.build()), new HasuraListResponseConverter<>(clazz));
+
         }
 
-        public <T> Build<T> expectResponseOfType(Class<T> clazz) {
-            return new Build<>(clazz);
-        }
-
-        public class ListBuild<K> {
-
-            HasuraListResponseConverter<K> responseConverter;
-
-            public ListBuild(Class<K> clzz) {
-                this.responseConverter = new HasuraListResponseConverter<>(clzz);
+        public <T> HasuraQuery<T> expectResponseType(Class<T> clazz) {
+            Request.Builder requestBuilder = new Request.Builder()
+                    .url(baseUrl);
+            if (requestbodyJSON != null) {
+                String jsonBody = gson.toJson(requestbodyJSON);
+                RequestBody reqBody = RequestBody.create(JSON, jsonBody);
+                requestBuilder.post(reqBody);
             }
-
-            public HasuraQuery<List<K>> build() {
-                Request.Builder requestBuilder = new Request.Builder()
-                        .url(baseUrl);
-                if (requestbodyJSON != null) {
-                    String jsonBody = gson.toJson(requestbodyJSON);
-                    RequestBody reqBody = RequestBody.create(JSON, jsonBody);
-                    requestBuilder.post(reqBody);
-                }
-                return new HasuraQuery<>(httpClient.newCall(requestBuilder.build()), responseConverter);
-            }
-        }
-
-        public class Build<K> {
-
-            HasuraResponseConverter<K> responseConverter;
-
-            public Build(Class<K> clazz) {
-                this.responseConverter = new HasuraResponseConverter<>(clazz);
-            }
-
-            public HasuraQuery<K> build() {
-                Request.Builder requestBuilder = new Request.Builder()
-                        .url(baseUrl);
-                if (requestbodyJSON != null) {
-                    String jsonBody = gson.toJson(requestbodyJSON);
-                    RequestBody reqBody = RequestBody.create(JSON, jsonBody);
-                    requestBuilder.post(reqBody);
-                }
-                return new HasuraQuery<>(httpClient.newCall(requestBuilder.build()), responseConverter);
-            }
-
+            return new HasuraQuery<>(httpClient.newCall(requestBuilder.build()), new HasuraResponseConverter<>(clazz));
         }
 
     }

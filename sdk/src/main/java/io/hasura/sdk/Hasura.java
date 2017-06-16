@@ -1,6 +1,8 @@
 package io.hasura.sdk;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.HashMap;
 
@@ -70,15 +72,19 @@ public class Hasura {
         HasuraSessionStore.initialise(context);
     }
 
-    HashMap<String, CustomService> customServiceMap = new HashMap<>();
+    HashMap<Class, CustomService> customServiceMap = new HashMap<>();
 
-    public <K> Hasura addCustomService(CustomService<K> cs) {
-        customServiceMap.put(cs.getServiceName(), cs);
+    public <K> Hasura addCustomService(@NonNull CustomService<K> cs) throws HasuraInitException {
+        if (customServiceMap.containsKey(cs.getClazz())) {
+            throw new HasuraInitException("Custom service with name " + cs.getClazz().getName() + " is already added to Hasura");
+        }
+        customServiceMap.put(cs.getClazz(), cs);
         return this;
     }
 
-    public <K> CustomService<K> getService(String serviceName) {
-        CustomService<K> cs = customServiceMap.get(serviceName);
+    @Nullable
+    public <K> CustomService<K> getService(Class<K> clazz) {
+        CustomService<K> cs = customServiceMap.get(clazz);
         return cs;
     }
 }

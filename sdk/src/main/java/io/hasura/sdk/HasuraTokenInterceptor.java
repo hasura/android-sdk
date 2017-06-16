@@ -1,5 +1,7 @@
 package io.hasura.sdk;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -26,10 +28,26 @@ public class HasuraTokenInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        Request newRequest = request.newBuilder()
-                .addHeader("Authorization", "Bearer " + authToken)
-                .addHeader("X-Hasura-Role", role)
-                .build();
-        return chain.proceed(newRequest);
+        Request.Builder builder = request.newBuilder();
+
+        Log.i("Request","Auth " + authToken);
+        Log.i("Request","Role " + role);
+
+        if (authToken != null) {
+            builder.addHeader("Authorization", "Bearer " + authToken);
+        }
+
+        if (role != null) {
+            builder.addHeader("X-Hasura-Role", role);
+        }
+        return chain.proceed(builder.build());
+    }
+
+    @Override
+    public String toString() {
+        return "HasuraTokenInterceptor{" +
+                "authToken='" + authToken + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
 }
