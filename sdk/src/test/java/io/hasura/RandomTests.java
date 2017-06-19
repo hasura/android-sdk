@@ -58,4 +58,5 @@ public class RandomTests {
 
         System.out.println(map.get("user").getRole());
     }
+
 }

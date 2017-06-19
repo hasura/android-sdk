@@ -6,10 +6,9 @@ import com.google.gson.GsonBuilder;
 import java.lang.reflect.Type;
 
 import io.hasura.sdk.Call;
-import io.hasura.sdk.HasuraException;
+import io.hasura.sdk.exception.HasuraException;
 import io.hasura.sdk.HasuraResponseConverter;
 import io.hasura.sdk.HasuraTokenInterceptor;
-import io.hasura.sdk.OkHttpClientProvider;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -22,14 +21,9 @@ public class HasuraHttpService {
     private OkHttpClient httpClient;
     private String baseUrl;
 
-    public HasuraHttpService(String baseUrl, HasuraTokenInterceptor tokenInterceptor) {
+    public HasuraHttpService(String baseUrl, OkHttpClient httpClient) {
         this.baseUrl = baseUrl;
-        this.httpClient = OkHttpClientProvider.getClientForTokenInterceptor(tokenInterceptor);
-    }
-
-    public HasuraHttpService(String baseUrl) {
-        this.baseUrl = baseUrl;
-        this.httpClient = OkHttpClientProvider.getHttpClient();
+        this.httpClient = httpClient;
     }
 
     protected <T> Call<T, HasuraException> makePostCall(String url, String jsonBody, Type responseType) {

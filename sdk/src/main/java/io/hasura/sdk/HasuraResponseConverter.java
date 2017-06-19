@@ -6,7 +6,9 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import io.hasura.sdk.response.HasuraErrorResponse;
+import io.hasura.sdk.exception.HasuraException;
+import io.hasura.sdk.exception.HasuraJsonException;
+import io.hasura.sdk.model.response.HasuraErrorResponse;
 
 
 public class HasuraResponseConverter<T> implements Converter<T, HasuraException> {

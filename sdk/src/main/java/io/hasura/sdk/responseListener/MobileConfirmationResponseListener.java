@@ -1,12 +1,10 @@
 package io.hasura.sdk.responseListener;
 
-import io.hasura.sdk.HasuraException;
+import io.hasura.sdk.exception.HasuraException;
 
 /**
  * Created by jaison on 06/06/17.
  */
 
-public interface MobileConfirmationResponseListener {
-    void onSuccess();
-    void onFailure(HasuraException e);
+public interface MobileConfirmationResponseListener extends SuccessFailureResponseListener{
 }

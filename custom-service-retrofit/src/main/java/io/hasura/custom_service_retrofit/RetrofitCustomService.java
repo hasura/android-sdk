@@ -2,9 +2,8 @@ package io.hasura.custom_service_retrofit;
 
 import java.util.HashMap;
 
-import io.hasura.sdk.CustomService;
-import io.hasura.sdk.CustomServiceBuilder;
-import retrofit2.Retrofit;
+import io.hasura.sdk.service.CustomService;
+import io.hasura.sdk.service.CustomServiceBuilder;
 
 /**
  * Created by jaison on 16/06/17.

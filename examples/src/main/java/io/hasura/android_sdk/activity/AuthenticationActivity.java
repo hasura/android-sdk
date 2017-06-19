@@ -11,12 +11,13 @@ import android.widget.EditText;
 import io.hasura.android_sdk.ApiInterface;
 import io.hasura.android_sdk.R;
 import io.hasura.custom_service_retrofit.RetrofitCustomService;
-import io.hasura.sdk.CustomService;
+import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraClient;
-import io.hasura.sdk.HasuraInitException;
+import io.hasura.sdk.ProjectConfig;
+import io.hasura.sdk.exception.HasuraInitException;
 import io.hasura.sdk.HasuraUser;
 import io.hasura.sdk.responseListener.AuthResponseListener;
-import io.hasura.sdk.HasuraException;
+import io.hasura.sdk.exception.HasuraException;
 import io.hasura.sdk.responseListener.SignUpResponseListener;
 
 
@@ -45,14 +46,15 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
 
         //init
         try {
-            HasuraClient.setProjectName("hello70")
+            Hasura.setProjectConfig(new ProjectConfig.Builder()
+                    .setProjectName("hello70")
+                    .build())
                     .addCustomService(cs)
                     .enableLogs()
                     .initialise(this);
         } catch (HasuraInitException e) {
             e.printStackTrace();
         }
-
 
         setContentView(R.layout.activity_authentication);
         username = (EditText) findViewById(R.id.username);
@@ -66,15 +68,16 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
         username.setText("jaison");
         password.setText("password");
 
-        user = new HasuraUser();
-        user.setMobile("8861503583");
-        user.enableMobileOtpLogin();
+        user = Hasura.getClient().getUser();
 
-        if (HasuraClient.currentUser() != null) {
+        if (user.isLoggedIn()) {
             //Logged in user is present
-            Log.i(TAG, "Logged in present: " + HasuraClient.currentUser().toString());
+            Log.i(TAG, "Logged in present: " + user.toString());
             ToDoActivity.startActivity(this);
         }
+
+        user.setMobile("8861503583");
+
     }
 
     private void signUp() {
@@ -104,7 +107,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
         user.setPassword(password.getText().toString());
         user.login(new AuthResponseListener() {
             @Override
-            public void onSuccess(HasuraUser user) {
+            public void onSuccess(String message) {
                 ToDoActivity.startActivity(AuthenticationActivity.this);
             }
 
@@ -113,6 +116,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
                 handleError(e);
             }
         });
+
     }
 
 

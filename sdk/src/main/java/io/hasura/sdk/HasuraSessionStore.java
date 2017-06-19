@@ -21,8 +21,6 @@ public class HasuraSessionStore {
     private static final String KEY_USER_EMAIL = "EmailKey";
     private static final String KEY_USER_ROLES = "UserRolesKey";
     private static final String KEY_USER_PASSWORD = "UserPasswordKey";
-    private static final String KEY_USER_ACCESSTOKEN = "UserAccessTokenKey";
-    private static final String KEY_USER_MOBILEOTPLOGINENABLED = "IsMobileOTPLoginEnabledKey";
 
     public static void initialise(Context context) {
         SharedPrefManager.getInstance().initialize(context);
@@ -42,18 +40,14 @@ public class HasuraSessionStore {
         editor.putString(KEY_USER_ROLES, jsonArray);
 
         editor.putString(KEY_USER_PASSWORD, hasuraUser.getPassword());
-        editor.putString(KEY_USER_ACCESSTOKEN, hasuraUser.getAccessToken());
-        editor.putBoolean(KEY_USER_MOBILEOTPLOGINENABLED, hasuraUser.isMobileOtpLoginEnabled());
-
-
         editor.apply();
     }
 
-    public static HasuraUser getSavedUser() {
+    public static void updateUserWithSavedData(HasuraUser hasuraUser) {
         int id = prefs.getInt(KEY_USER_ID,-1);
 
         if (id == -1) {
-            return null;
+            return;
         }
 
         String authToken = prefs.getString(KEY_USER_TOKEN,null);
@@ -65,10 +59,7 @@ public class HasuraSessionStore {
         String[] roles = new Gson().fromJson(roleString, String[].class);
 
         String password = prefs.getString(KEY_USER_PASSWORD,null);
-        String accesstoken = prefs.getString(KEY_USER_ACCESSTOKEN,null);
-        Boolean isMobileOtpLoginEnabled = prefs.getBoolean(KEY_USER_MOBILEOTPLOGINENABLED,false);
 
-        HasuraUser hasuraUser = new HasuraUser();
         hasuraUser.setId(id);
         hasuraUser.setAuthToken(authToken);
         hasuraUser.setUsername(username);
@@ -76,14 +67,6 @@ public class HasuraSessionStore {
         hasuraUser.setEmail(email);
         hasuraUser.setRoles(roles);
         hasuraUser.setPassword(password);
-        hasuraUser.setAccessToken(accesstoken);
-        hasuraUser.setSelectedRole(HasuraConfig.USER.DEFAULT_ROLE);
-
-        if(isMobileOtpLoginEnabled) {
-            hasuraUser.enableMobileOtpLogin();
-        }
-
-        return hasuraUser;
     }
 
     public static void deleteSavedUser() {

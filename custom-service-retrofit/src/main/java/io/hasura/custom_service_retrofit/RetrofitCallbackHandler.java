@@ -6,8 +6,8 @@ import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 
 import io.hasura.sdk.HasuraErrorCode;
-import io.hasura.sdk.HasuraException;
-import io.hasura.sdk.response.HasuraErrorResponse;
+import io.hasura.sdk.exception.HasuraException;
+import io.hasura.sdk.model.response.HasuraErrorResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

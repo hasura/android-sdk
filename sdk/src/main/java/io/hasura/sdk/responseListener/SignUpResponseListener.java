@@ -1,6 +1,6 @@
 package io.hasura.sdk.responseListener;
 
-import io.hasura.sdk.HasuraException;
+import io.hasura.sdk.exception.HasuraException;
 import io.hasura.sdk.HasuraUser;
 
 /**

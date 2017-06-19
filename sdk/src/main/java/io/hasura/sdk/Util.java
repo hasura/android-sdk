@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.hasura.sdk.exception.HasuraJsonException;
 import okhttp3.Response;
 
 public class Util {

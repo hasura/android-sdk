@@ -2,17 +2,11 @@ package io.hasura.custom_service_retrofit;
 
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 
-import io.hasura.sdk.CustomServiceBuilder;
-import io.hasura.sdk.HasuraConfig;
+import io.hasura.sdk.service.CustomServiceBuilder;
 import io.hasura.sdk.HasuraTokenInterceptor;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -35,11 +29,9 @@ public class RetrofitServiceBuilder implements CustomServiceBuilder {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         clientBuilder.addInterceptor(hasuraTokenInterceptor);
 
-        if (HasuraConfig.SDK.isLoggingEnabled) {
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-            clientBuilder.addInterceptor(logging);
-        }
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        clientBuilder.addInterceptor(logging);
         //TODO: FIXME
 //        if (additionalHeaders != null) {
 //            clientBuilder.addInterceptor(new Interceptor() {

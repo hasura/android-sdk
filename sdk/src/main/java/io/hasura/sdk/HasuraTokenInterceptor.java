@@ -1,7 +1,5 @@
 package io.hasura.sdk;
 
-import android.util.Log;
-
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -29,9 +27,6 @@ public class HasuraTokenInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         Request.Builder builder = request.newBuilder();
-
-        Log.i("Request","Auth " + authToken);
-        Log.i("Request","Role " + role);
 
         if (authToken != null) {
             builder.addHeader("Authorization", "Bearer " + authToken);

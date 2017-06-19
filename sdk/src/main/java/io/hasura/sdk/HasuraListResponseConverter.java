@@ -6,7 +6,9 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.List;
 
-import io.hasura.sdk.response.HasuraErrorResponse;
+import io.hasura.sdk.exception.HasuraException;
+import io.hasura.sdk.exception.HasuraJsonException;
+import io.hasura.sdk.model.response.HasuraErrorResponse;
 import okhttp3.Response;
 
 /**
