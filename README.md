@@ -51,4 +51,6 @@ Add the dependency
 </dependency>
 ```
 
+For a rough documentation on how to use the sdk. Take a look at [this](https://gist.github.com/jaisontj/40f1a7cf55fc5b889c43c4a71996a34a).
+
 
