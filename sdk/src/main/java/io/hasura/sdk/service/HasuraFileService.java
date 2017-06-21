@@ -81,6 +81,18 @@ public class HasuraFileService {
                 .build();
     }
 
+    private Request getUploadRequest(String fileName, byte[] file, String contentType) throws IllegalArgumentException {
+        MediaType mediaType = MediaType.parse(contentType);
+        if (mediaType == null) {
+            throw new IllegalArgumentException("Malformed content type : " + contentType);
+        }
+        RequestBody body = RequestBody.create(mediaType, file);
+        return new Request.Builder()
+                .url(projectConfig.getUploadFileUrl(fileName))
+                .post(body)
+                .build();
+    }
+
     public void uploadFile(String fileName, File file, String contentType, final FileUploadResponseListener listener) throws IllegalArgumentException {
         Request request = getUploadRequest(fileName, file, contentType);
         OkHttpClient client = httpClientProvider.getClientForRole(role);
