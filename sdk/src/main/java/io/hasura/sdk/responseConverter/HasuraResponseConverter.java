@@ -1,4 +1,4 @@
-package io.hasura.sdk;
+package io.hasura.sdk.responseConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -6,6 +6,9 @@ import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import io.hasura.sdk.Converter;
+import io.hasura.sdk.HasuraErrorCode;
+import io.hasura.sdk.Util;
 import io.hasura.sdk.exception.HasuraException;
 import io.hasura.sdk.exception.HasuraJsonException;
 import io.hasura.sdk.model.response.HasuraErrorResponse;

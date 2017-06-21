@@ -7,8 +7,7 @@ import java.lang.reflect.Type;
 
 import io.hasura.sdk.Call;
 import io.hasura.sdk.exception.HasuraException;
-import io.hasura.sdk.HasuraResponseConverter;
-import io.hasura.sdk.HasuraTokenInterceptor;
+import io.hasura.sdk.responseConverter.HasuraResponseConverter;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

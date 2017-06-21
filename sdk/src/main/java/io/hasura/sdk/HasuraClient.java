@@ -1,24 +1,20 @@
 package io.hasura.sdk;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import io.hasura.sdk.query.HasuraQuery;
+import io.hasura.sdk.responseListener.FileDownloadResponseListener;
 import io.hasura.sdk.service.CustomService;
-import okhttp3.OkHttpClient;
+import io.hasura.sdk.service.HasuraFileService;
+import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Created by jaison on 23/01/17.
  */
 
-/**
- * SDK Init/≥¬¬¬
- * HasuraUser AKA AuthService
- * DataService
- * QueryTemplateService
- * CustomService
- **/
 
 public class HasuraClient {
 
@@ -111,29 +107,70 @@ public class HasuraClient {
         return interceptor;
     }
 
-    private OkHttpClient getClientForRole(String role) {
-        if (clientRoleMap.containsKey(role)) {
-            return clientRoleMap.get(role);
+    private HttpClientProvider clientProvider = new HttpClientProvider() {
+        @Override
+        public OkHttpClient getClientForRole(String role) {
+            if (clientRoleMap.containsKey(role)) {
+                return clientRoleMap.get(role);
+            }
+
+            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+
+            if (shouldEnableLogs) {
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+                clientBuilder.addInterceptor(loggingInterceptor);
+            }
+
+            if (!role.equalsIgnoreCase("anonymous"))
+                clientBuilder.addInterceptor(getTokenInterceptorForRole(role));
+
+            OkHttpClient client = clientBuilder.build();
+
+            clientRoleMap.put(role, client);
+            return client;
         }
 
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        @Override
+        public OkHttpClient getClientForRole(String role, final FileDownloadResponseListener listener) {
+            if (clientRoleMap.containsKey(role)) {
+                return clientRoleMap.get(role);
+            }
 
-        if (shouldEnableLogs) {
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            clientBuilder.addInterceptor(loggingInterceptor);
+            OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+
+            if (shouldEnableLogs) {
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+                clientBuilder.addInterceptor(loggingInterceptor);
+            }
+
+            if (!role.equalsIgnoreCase("anonymous"))
+                clientBuilder.addInterceptor(getTokenInterceptorForRole(role));
+
+            clientBuilder.addNetworkInterceptor(new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Response originalResponse = chain.proceed(chain.request());
+                    return originalResponse.newBuilder()
+                            .body(new ProgressResponseBody(originalResponse.body(), listener))
+                            .build();
+                }
+            });
+
+            OkHttpClient client = clientBuilder.build();
+
+            clientRoleMap.put(role, client);
+            return client;
         }
-
-        clientBuilder.addInterceptor(getTokenInterceptorForRole(role));
-
-        OkHttpClient client = clientBuilder.build();
-
-        clientRoleMap.put(role, client);
-        return client;
-    }
+    };
 
     public ApiService asRole(String role) {
         return new ApiService(role);
+    }
+
+    public ApiService asAnonymouseRole() {
+        return new ApiService("anonymous");
     }
 
     public HasuraQuery.Builder useDataService() {
@@ -148,6 +185,14 @@ public class HasuraClient {
         return new ApiService(projectConfig.getDefaultRole()).useCustomService(clzz);
     }
 
+    public HasuraFileService useFileStoreService() {
+        return new HasuraFileService.Builder()
+                .setHttpClientProvider(clientProvider)
+                .setRole(projectConfig.getDefaultRole())
+                .setProjectConfi(projectConfig)
+                .build();
+    }
+
     public class ApiService {
 
         String role;
@@ -157,15 +202,23 @@ public class HasuraClient {
         }
 
         public HasuraQuery.Builder useDataService() {
-            return new HasuraQuery.Builder(getClientForRole(role)).setBaseUrl(projectConfig.getQueryUrl());
+            return new HasuraQuery.Builder(role, clientProvider, projectConfig.getQueryUrl());
         }
 
         public HasuraQuery.Builder useQueryTemplateService(String templateName) {
-            return new HasuraQuery.Builder(getClientForRole(role)).setBaseUrl(projectConfig.getQueryTemplateUrl(templateName));
+            return new HasuraQuery.Builder(role, clientProvider, projectConfig.getQueryTemplateUrl(templateName));
         }
 
         public <K> K useCustomService(Class<K> clzz) {
             return clzz.cast(customServiceMap.get(clzz).getInterface(getTokenInterceptorForRole(role)));
+        }
+
+        public HasuraFileService useFileStoreService() {
+            return new HasuraFileService.Builder()
+                    .setHttpClientProvider(clientProvider)
+                    .setRole(role)
+                    .setProjectConfi(projectConfig)
+                    .build();
         }
 
     }
