@@ -14,7 +14,8 @@ public class ProjectConfig {
     private String projectName;
     private String version;
 
-    private ProjectConfig() {}
+    private ProjectConfig() {
+    }
 
     private ProjectConfig(Builder builder) {
         this.projectName = builder.projectName;
@@ -26,6 +27,14 @@ public class ProjectConfig {
 
     public String getCustomServiceUrl(String customServiceName) {
         return getUrl(protocol, customServiceName, baseDomain);
+    }
+
+    public String getUploadFileUrl(String fileName) {
+        return getUrl(protocol, "fileservice", baseDomain + "/") + version + "/" + fileName;
+    }
+
+    public String getDownloadFileUrl(Integer fileId) {
+        return getUrl(protocol, "fileservice", baseDomain + "/") + version + "/file/" + fileId;
     }
 
     public String getAuthUrl() {

@@ -9,12 +9,11 @@ import java.util.List;
 
 import io.hasura.sdk.Call;
 import io.hasura.sdk.Converter;
-import io.hasura.sdk.HasuraListResponseConverter;
-import io.hasura.sdk.HasuraResponseConverter;
-import io.hasura.sdk.HasuraTokenInterceptor;
+import io.hasura.sdk.responseConverter.HasuraListResponseConverter;
+import io.hasura.sdk.responseConverter.HasuraResponseConverter;
+import io.hasura.sdk.HttpClientProvider;
 import io.hasura.sdk.exception.HasuraException;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
@@ -24,33 +23,31 @@ import okhttp3.RequestBody;
 
 public class HasuraQuery<T> extends Call<T, HasuraException> {
 
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    protected static final Gson gson = new GsonBuilder().create();
-
     private HasuraQuery(okhttp3.Call rawCall, Converter<T, HasuraException> converter) {
         super(rawCall, converter);
     }
 
     public static final class Builder {
+
+        private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        protected static final Gson gson = new GsonBuilder().create();
+
         String baseUrl;
         JsonObject requestbodyJSON;
-        OkHttpClient httpClient;
+        HttpClientProvider clientProvider;
+        String role;
 
-        public Builder(OkHttpClient client) {
-            this.httpClient = client;
+        public Builder(String role, HttpClientProvider clientProvider, String baseUrl) {
+            this.role = role;
+            this.clientProvider = clientProvider;
+            this.baseUrl = baseUrl;
         }
-
 
         private JsonObject getRequestBody() {
             if (requestbodyJSON == null) {
                 requestbodyJSON = new JsonObject();
             }
             return requestbodyJSON;
-        }
-
-        public Builder setBaseUrl(String baseUrl) {
-            this.baseUrl = baseUrl;
-            return this;
         }
 
         public Builder setRequestParams(String key, String value) {
@@ -92,7 +89,7 @@ public class HasuraQuery<T> extends Call<T, HasuraException> {
                 RequestBody reqBody = RequestBody.create(JSON, jsonBody);
                 requestBuilder.post(reqBody);
             }
-            return new HasuraQuery<>(httpClient.newCall(requestBuilder.build()), new HasuraListResponseConverter<>(clazz));
+            return new HasuraQuery<>(clientProvider.getClientForRole(role).newCall(requestBuilder.build()), new HasuraListResponseConverter<>(clazz));
         }
 
         public <T> HasuraQuery<T> expectResponseType(Class<T> clazz) {
@@ -103,7 +100,7 @@ public class HasuraQuery<T> extends Call<T, HasuraException> {
                 RequestBody reqBody = RequestBody.create(JSON, jsonBody);
                 requestBuilder.post(reqBody);
             }
-            return new HasuraQuery<>(httpClient.newCall(requestBuilder.build()), new HasuraResponseConverter<>(clazz));
+            return new HasuraQuery<>(clientProvider.getClientForRole(role).newCall(requestBuilder.build()), new HasuraResponseConverter<>(clazz));
         }
 
     }
