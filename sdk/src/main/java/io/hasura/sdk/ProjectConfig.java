@@ -33,7 +33,7 @@ public class ProjectConfig {
         return getUrl(protocol, "fileservice", baseDomain + "/") + version + "/" + fileName;
     }
 
-    public String getDownloadFileUrl(Integer fileId) {
+    public String getDownloadFileUrl(String fileId) {
         return getUrl(protocol, "fileservice", baseDomain + "/") + version + "/file/" + fileId;
     }
 

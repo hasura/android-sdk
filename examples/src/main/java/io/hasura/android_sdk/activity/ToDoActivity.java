@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import java.io.File;
 import java.util.List;
 
 import io.hasura.android_sdk.R;
@@ -24,9 +25,11 @@ import io.hasura.android_sdk.models.TodoReturningResponse;
 import io.hasura.android_sdk.models.UpdateTodoRequest;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraClient;
+import io.hasura.sdk.model.response.FileUploadResponse;
 import io.hasura.sdk.responseListener.FileDownloadResponseListener;
 import io.hasura.sdk.query.HasuraQuery;
 import io.hasura.sdk.HasuraUser;
+import io.hasura.sdk.responseListener.FileUploadResponseListener;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.Callback;
 import io.hasura.sdk.exception.HasuraException;
@@ -66,6 +69,37 @@ public class ToDoActivity extends BaseActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         fetchTodosFromDB();
+
+        client.useFileStoreService()
+                .uploadFile("fileName", new File("sadsadasd"), "image/*", new FileUploadResponseListener() {
+                    @Override
+                    public void onUploadComplete(FileUploadResponse response) {
+
+                    }
+
+                    @Override
+                    public void onUploadFailed(HasuraException e) {
+
+                    }
+                });
+
+        client.useFileStoreService()
+                .downloadFile(1, new FileDownloadResponseListener() {
+                    @Override
+                    public void onDownloadComplete(byte[] data) {
+
+                    }
+
+                    @Override
+                    public void onDownloadFailed(HasuraException e) {
+
+                    }
+
+                    @Override
+                    public void onDownloading(float completedPercentage) {
+
+                    }
+                });
 
     }
 

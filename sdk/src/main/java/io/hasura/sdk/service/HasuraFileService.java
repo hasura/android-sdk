@@ -102,11 +102,11 @@ public class HasuraFileService {
         });
     }
 
-    public void downloadFile(Integer fileId, final FileDownloadResponseListener listener) {
+    public void downloadFile(String fileId, final FileDownloadResponseListener listener) {
         downloadFile(projectConfig.getDownloadFileUrl(fileId), listener);
     }
 
-    public void downloadFile(String url, final FileDownloadResponseListener listener) {
+    public void downloadFileWithUrl(String url, final FileDownloadResponseListener listener) {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
