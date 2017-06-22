@@ -93,8 +93,16 @@ public class HasuraFileService {
                 .build();
     }
 
+    public void uploadFile(String fileName, byte[] file, String contentType, FileUploadResponseListener listener) throws IllegalArgumentException {
+        uploadFile(getUploadRequest(fileName, file, contentType), listener);
+    }
+
     public void uploadFile(String fileName, File file, String contentType, final FileUploadResponseListener listener) throws IllegalArgumentException {
         Request request = getUploadRequest(fileName, file, contentType);
+        uploadFile(request, listener);
+    }
+
+    private void uploadFile(Request request, final FileUploadResponseListener listener) {
         OkHttpClient client = httpClientProvider.getClientForRole(role);
         Call<FileUploadResponse, HasuraException> call = new Call<>(client.newCall(request), new HasuraResponseConverter<>(FileUploadResponse.class));
         call.enqueue(new Callback<FileUploadResponse, HasuraException>() {
