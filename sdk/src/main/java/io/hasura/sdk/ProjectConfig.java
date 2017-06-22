@@ -30,15 +30,15 @@ public class ProjectConfig {
     }
 
     public String getUploadFileUrl(String fileName) {
-        return getUrl(protocol, "fileservice", baseDomain + "/") + version + "/" + fileName;
+        return getUrl(protocol, SERVICE.FILESTORE, baseDomain + "/") + version + "/file/" + fileName;
     }
 
     public String getDownloadFileUrl(String fileId) {
-        return getUrl(protocol, "fileservice", baseDomain + "/") + version + "/file/" + fileId;
+        return getUrl(protocol, SERVICE.FILESTORE, baseDomain + "/") + version + "/file/" + fileId;
     }
 
     public String getAuthUrl() {
-        return getUrl(protocol, "auth", baseDomain + "/");
+        return getUrl(protocol, SERVICE.AUTH, baseDomain + "/");
     }
 
     public String getQueryUrl() {
@@ -50,7 +50,7 @@ public class ProjectConfig {
     }
 
     private String getDataUrl() {
-        return getUrl(protocol, "data", baseDomain + "/");
+        return getUrl(protocol, SERVICE.DATA, baseDomain + "/");
     }
 
     public String getDefaultRole() {
@@ -65,6 +65,12 @@ public class ProjectConfig {
         static Boolean IS_ENABLED_OVER_HTTP = false;
         static String DEFAULT_ROLE = "user";
         static Integer API_VERSION = 1;
+    }
+
+    private static class SERVICE {
+        static String AUTH = "auth";
+        static String DATA = "data";
+        static String FILESTORE = "filestore";
     }
 
     public static class Builder {
