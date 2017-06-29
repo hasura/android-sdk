@@ -71,23 +71,10 @@ public class ToDoActivity extends BaseActivity {
         fetchTodosFromDB();
 
         client.useFileStoreService()
-                .uploadFile("fileName", new File("sadsadasd"), "image/*", new FileUploadResponseListener() {
-                    @Override
-                    public void onUploadComplete(FileUploadResponse response) {
-
-                    }
-
-                    @Override
-                    public void onUploadFailed(HasuraException e) {
-
-                    }
-                });
-
-        client.useFileStoreService()
-                .downloadFile(1, new FileDownloadResponseListener() {
+                .downloadFile("qweqwewqe", new FileDownloadResponseListener() {
                     @Override
                     public void onDownloadComplete(byte[] data) {
-
+                        Log.i(TAG, "DownloadComplete");
                     }
 
                     @Override
@@ -97,7 +84,7 @@ public class ToDoActivity extends BaseActivity {
 
                     @Override
                     public void onDownloading(float completedPercentage) {
-
+                        Log.i(TAG, "DownloadingFile: " + completedPercentage);
                     }
                 });
 
@@ -260,4 +247,5 @@ public class ToDoActivity extends BaseActivity {
         }
         return false;
     }
+
 }

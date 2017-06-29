@@ -1,5 +1,7 @@
 package io.hasura.sdk;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -131,12 +133,10 @@ public class HasuraClient {
             return client;
         }
 
+
+        //TODO : Are OKHTTPCLIENTs cheap ? Created each time here
         @Override
         public OkHttpClient getClientForRole(String role, final FileDownloadResponseListener listener) {
-            if (clientRoleMap.containsKey(role)) {
-                return clientRoleMap.get(role);
-            }
-
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
 
             if (shouldEnableLogs) {
@@ -159,8 +159,6 @@ public class HasuraClient {
             });
 
             OkHttpClient client = clientBuilder.build();
-
-            clientRoleMap.put(role, client);
             return client;
         }
     };

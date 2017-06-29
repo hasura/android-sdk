@@ -94,7 +94,8 @@ public class HasuraFileService {
     }
 
     public void uploadFile(String fileName, byte[] file, String contentType, FileUploadResponseListener listener) throws IllegalArgumentException {
-        uploadFile(getUploadRequest(fileName, file, contentType), listener);
+        Request request = getUploadRequest(fileName, file, contentType);
+        uploadFile(request, listener);
     }
 
     public void uploadFile(String fileName, File file, String contentType, final FileUploadResponseListener listener) throws IllegalArgumentException {
@@ -123,7 +124,7 @@ public class HasuraFileService {
     }
 
     public void downloadFile(String fileId, final FileDownloadResponseListener listener) {
-        downloadFile(projectConfig.getDownloadFileUrl(fileId), listener);
+        downloadFileWithUrl(projectConfig.getDownloadFileUrl(fileId), listener);
     }
 
     public void downloadFileWithUrl(String url, final FileDownloadResponseListener listener) {
