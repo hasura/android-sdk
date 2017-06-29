@@ -70,7 +70,8 @@ public class ToDoActivity extends BaseActivity {
         recyclerView.setAdapter(adapter);
         fetchTodosFromDB();
 
-        client.useFileStoreService()
+        client.asRole("customrole")
+                .useFileStoreService()
                 .downloadFile("qweqwewqe", new FileDownloadResponseListener() {
                     @Override
                     public void onDownloadComplete(byte[] data) {
