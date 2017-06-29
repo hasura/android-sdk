@@ -1,5 +1,7 @@
 package io.hasura.sdk;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 import io.hasura.sdk.responseListener.FileDownloadResponseListener;
@@ -17,9 +19,13 @@ public class ProgressResponseBody extends ResponseBody {
     private final FileDownloadResponseListener fileDownloadResponseListener;
     private BufferedSource bufferedSource;
 
+    private String TAG = "ProgressResponseBody";
+
     ProgressResponseBody(ResponseBody responseBody, FileDownloadResponseListener fileDownloadResponseListener) {
         this.responseBody = responseBody;
         this.fileDownloadResponseListener = fileDownloadResponseListener;
+        Log.d(TAG, "Constructor");
+
     }
 
     @Override
@@ -49,8 +55,11 @@ public class ProgressResponseBody extends ResponseBody {
                 long bytesRead = super.read(sink, byteCount);
                 // read() returns the number of bytes read, or -1 if this source is exhausted.
                 totalBytesRead += bytesRead != -1 ? bytesRead : 0;
-                if (fileDownloadResponseListener != null)
+                Log.d(TAG, "TotalBytesRead : " + totalBytesRead);
+                if (fileDownloadResponseListener != null) {
                     fileDownloadResponseListener.onDownloading((100 * totalBytesRead) / responseBody.contentLength());
+                    Log.d(TAG, "Download Progress : " + (100 * totalBytesRead) / responseBody.contentLength());
+                }
                 return bytesRead;
             }
         };
