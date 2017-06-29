@@ -105,6 +105,7 @@ public class HasuraClient {
         }
         HasuraTokenInterceptor interceptor = new HasuraTokenInterceptor();
         interceptor.setAuthToken(currentUser.getAuthToken());
+        interceptor.setRole(role);
         interceptorRoleMap.put(role, interceptor);
         return interceptor;
     }
@@ -118,17 +119,16 @@ public class HasuraClient {
 
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
 
+            if (!role.equalsIgnoreCase("anonymous"))
+                clientBuilder.addInterceptor(getTokenInterceptorForRole(role));
+
             if (shouldEnableLogs) {
                 HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
                 loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                 clientBuilder.addInterceptor(loggingInterceptor);
             }
 
-            if (!role.equalsIgnoreCase("anonymous"))
-                clientBuilder.addInterceptor(getTokenInterceptorForRole(role));
-
             OkHttpClient client = clientBuilder.build();
-
             clientRoleMap.put(role, client);
             return client;
         }
@@ -138,12 +138,6 @@ public class HasuraClient {
         @Override
         public OkHttpClient getClientForRole(String role, final FileDownloadResponseListener listener) {
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-
-            if (shouldEnableLogs) {
-                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-                clientBuilder.addInterceptor(loggingInterceptor);
-            }
 
             if (!role.equalsIgnoreCase("anonymous"))
                 clientBuilder.addInterceptor(getTokenInterceptorForRole(role));
@@ -157,6 +151,12 @@ public class HasuraClient {
                             .build();
                 }
             });
+
+            if (shouldEnableLogs) {
+                HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+                loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+                clientBuilder.addInterceptor(loggingInterceptor);
+            }
 
             OkHttpClient client = clientBuilder.build();
             return client;
