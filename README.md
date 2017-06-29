@@ -24,7 +24,8 @@ Next, Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura:android-sdk.sdk:$release_tag' //for eg: compile 'com.github.hasura:android-sdk.sdk:v0.0.3' 
+   compile 'com.github.hasura:android-sdk.sdk:$release_tag' 
+   //for eg: compile 'com.github.hasura:android-sdk.sdk:v0.0.4' 
 }
 ```
 
