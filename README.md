@@ -350,3 +350,7 @@ Hasura.setProjectConfig(new HasuraConfig.Builder()
 ##### Step3: Accessing Custom Service
 MyCustomService cs = client.useCustomService(MyCustomInterface.class);
 
+ISSUES
+------
+
+In case of issues, please raise an issue [here](https://github.com/hasura/support)
