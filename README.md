@@ -321,9 +321,9 @@ client.useFileStoreService()
 
 #### Using a custom service - Retrofit Support 
 
-Let's say you have a custom service set up on Hasura called "api"
-Your external endpoint for this custom service would be -> "api.<project-name>.hasura-app.io"
-This is a wrapper over Retrofit for custom services, assuming that your interface with the api definitions is called "MyCustomInterface.java"
+- Let's say you have a custom service set up on Hasura called "api"
+- Your external endpoint for this custom service would be -> "api.<project-name>.hasura-app.io"
+- This is a wrapper over Retrofit for custom services, assuming that your interface with the api definitions is called "MyCustomInterface.java"
 
 ##### Step1: Build your custom service (before Hasura Init)
 
