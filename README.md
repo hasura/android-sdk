@@ -353,4 +353,4 @@ MyCustomService cs = client.useCustomService(MyCustomInterface.class);
 ISSUES
 ------
 
-In case of issues, please raise an issue [here](https://github.com/hasura/support)
+In case of bugs, please raise an issue [here](https://github.com/hasura/support)
