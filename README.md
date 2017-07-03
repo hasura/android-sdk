@@ -176,7 +176,7 @@ user.logout(new LogoutResponseListener() {
 
 ### Data Service
 
-Hasura provides out of the box data apis on the Tables and views you make in your project. To learn more about how they work, check out the docs [here] (https://hasura.io/_docs/platform/0.6/getting-started/4-data-query.html)
+Hasura provides out of the box data apis on the Tables and views you make in your project. To learn more about how they work, check out the docs [here](https://hasura.io/_docs/platform/0.6/getting-started/4-data-query.html)
 
 ```java
 client.useDataService() 
@@ -202,7 +202,7 @@ In the above method, there are a few things to be noted :
 
 ```
 If the HasuraUser in the HasuraClient is loggedin/signedup then every call made by the HasuraClient will be 
-authenticated by default with "user" as the default role (This default role can be changed when building the project config [here](#project-config)
+authenticated by default with "user" as the default role (This default role can be changed when building the project config 
 ```
 
 In case you want to make the above call for an anonymous user 
