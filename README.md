@@ -196,13 +196,13 @@ client.useDataService()
 ```
 
 In the above method, there are a few things to be noted :
-- .setRequestBody(): This is an overloaded method which accepts either an object of type `JsonObject` or a POJO (ensure that the JSON representation of this object is correct)
-- .expectResponseType(): Specify the POJO representation of the expected response.
+- `.setRequestBody()`: This is an overloaded method which accepts either an object of type `JsonObject` or a POJO (ensure that the JSON representation of this object is correct)
+- `.expectResponseType()`: Specify the POJO representation of the expected response.
 ***Note***: In case you are expecting an array response, use .expectResponseTypeArrayOf()
 
 ```
 If the HasuraUser in the HasuraClient is loggedin/signedup then every call made by the HasuraClient will be 
-authenticated by default with "user" as the default role (This default role can be changed when building the project config 
+authenticated by default with "user" as the default role (This default role can be changed when building the project config) 
 ```
 
 In case you want to make the above call for an anonymous user 
@@ -277,7 +277,7 @@ Hasura provides a filestore service, which can be used to upload and download fi
 
 ```java
 client.useFileStoreService()
-                .uploadFile("fileId", /*File*/, /*mimeType*/"image/*", new FileUploadResponseListener() {
+                .uploadFile("fileId", /*File*/, /*mimeType*/, new FileUploadResponseListener() {
                     @Override
                     public void onUploadComplete(FileUploadResponse response) {
                       //Success
@@ -348,7 +348,10 @@ Hasura.setProjectConfig(new HasuraConfig.Builder()
 ```
 
 ##### Step3: Accessing Custom Service
+
+```java
 MyCustomService cs = client.useCustomService(MyCustomInterface.class);
+```
 
 ISSUES
 ------
