@@ -1,5 +1,7 @@
 package io.hasura.sdk;
 
+import android.util.Log;
+
 import java.io.IOException;
 
 import io.hasura.sdk.exception.HasuraException;
@@ -496,6 +498,21 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
                         }
                     }
                 });
+    }
+
+    public void forceLogout() {
+        clearAllData();
+        HasuraSessionStore.deleteSavedUser();
+    }
+
+    private void clearAllData() {
+        setId(-1);
+        setEmail(null);
+        setUsername(null);
+        setMobile(null);
+        setRoles(null);
+        setAuthToken(null);
+        setPassword(null);
     }
 
     @Override
