@@ -26,8 +26,7 @@ Next, Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura:android-sdk:sdk:$release_tag' 
-   //for eg: compile 'com.github.hasura:android-sdk:sdk:v0.0.4' 
+   compile 'com.github.hasura:android-sdk:sdk:v0.0.5' 
 }
 ```
 
@@ -50,7 +49,7 @@ Add the dependency
 <dependency>
   <groupId>com.github.hasura.android-sdk</groupId>
   <artifactId>sdk</artifactId>
-  <version>v0.0.4/version>
+  <version>v0.0.5/version>
 </dependency>
 ```
 
@@ -319,13 +318,40 @@ client.useFileStoreService()
 
 ### Custom Service
 
+
+
 #### Using a custom service - Retrofit Support 
 
 - Let's say you have a custom service set up on Hasura called "api"
 - Your external endpoint for this custom service would be -> "api.<project-name>.hasura-app.io"
 - This is a wrapper over Retrofit for custom services, assuming that your interface with the api definitions is called "MyCustomInterface.java"
 
-##### Step1: Build your custom service (before Hasura Init)
+#### Step1: Including the retrofit support
+
+Using Gradle:
+
+Add the following to your app level build.gradle 
+
+```groovy
+dependencies {
+   compile 'com.github.hasura:android-sdk:custom-service-retrofit:v0.0.5' 
+}
+```
+
+Using Maven:
+
+Add the dependency
+
+```xml
+<dependency>
+  <groupId>com.github.hasura.android-sdk</groupId>
+  <artifactId>custom-service-retrofit</artifactId>
+  <version>v0.0.5/version>
+</dependency>
+```
+
+
+##### Step2: Build your custom service (before Hasura Init)
 
 ```java
 RetrofitCustomService<MyCustomInterface> cs = new RetrofitCustomService.Builder()
@@ -333,7 +359,7 @@ RetrofitCustomService<MyCustomInterface> cs = new RetrofitCustomService.Builder(
                 .build(MyCustomInterface.class);
 ```
 
-##### Step2: Add this custom service during init
+##### Step3: Add this custom service during init
 
 ```java
 Hasura.setProjectConfig(new HasuraConfig.Builder()
@@ -347,7 +373,7 @@ Hasura.setProjectConfig(new HasuraConfig.Builder()
   .initialise(this);
 ```
 
-##### Step3: Accessing Custom Service
+##### Step4: Accessing Custom Service
 
 ```java
 MyCustomService cs = client.useCustomService(MyCustomInterface.class);
