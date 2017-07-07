@@ -5,6 +5,7 @@ import android.os.Looper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 import io.hasura.sdk.Call;
 import io.hasura.sdk.Callback;
@@ -93,13 +94,21 @@ public class HasuraFileService {
                 .build();
     }
 
-    public void uploadFile(String fileName, byte[] file, String contentType, FileUploadResponseListener listener) throws IllegalArgumentException {
-        Request request = getUploadRequest(fileName, file, contentType);
+    public void uploadFile(byte[] file, String contentType, FileUploadResponseListener listener) throws IllegalArgumentException {
+        uploadFile(UUID.randomUUID().toString(), file, contentType, listener);
+    }
+
+    public void uploadFile(File file, String contentType, final FileUploadResponseListener listener) throws IllegalArgumentException {
+        uploadFile(UUID.randomUUID().toString(), file, contentType, listener);
+    }
+
+    public void uploadFile(String fileId, byte[] file, String contentType, FileUploadResponseListener listener) throws IllegalArgumentException {
+        Request request = getUploadRequest(fileId, file, contentType);
         uploadFile(request, listener);
     }
 
-    public void uploadFile(String fileName, File file, String contentType, final FileUploadResponseListener listener) throws IllegalArgumentException {
-        Request request = getUploadRequest(fileName, file, contentType);
+    public void uploadFile(String fileId, File file, String contentType, final FileUploadResponseListener listener) throws IllegalArgumentException {
+        Request request = getUploadRequest(fileId, file, contentType);
         uploadFile(request, listener);
     }
 
