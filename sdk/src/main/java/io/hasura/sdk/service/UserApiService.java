@@ -153,7 +153,7 @@ public class UserApiService extends HasuraHttpService {
     public Call<LogoutResponse, HasuraException> logout() {
         Type respType = new TypeToken<LogoutResponse>() {
         }.getType();
-        return makeGetCall("user/logout", respType);
+        return makePostCall("user/logout","{}", respType);
     }
 
 }
