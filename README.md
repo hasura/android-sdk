@@ -181,7 +181,7 @@ Hasura provides out of the box data apis on the Tables and views you make in you
 client.useDataService() 
   .setRequestBody(JsonObject)
   .expectResponseType(MyResponse.class)
-  .executeAsync(new Callback<MyResponse>, HasuraException>() {
+  .enqueue(new Callback<MyResponse>, HasuraException>() {
                     @Override
                     public void onSuccess(MyResponse response) {
                       //Handle response
@@ -211,7 +211,7 @@ client.asAnonymousRole()
   .useDataService()
   .setRequestBody(JsonObject)
   .expectResponseType(MyResponse.class)
-  .executeAsync(new Callback<MyResponse>, HasuraException>() {
+  .enqueue(new Callback<MyResponse>, HasuraException>() {
                     @Override
                     public void onSuccess(MyResponse response) {
                       //Handle response
@@ -231,7 +231,7 @@ client.asRole("customRole") //throws an error if the current user does not have 
   .useDataService()
   .setRequestBody(JsonObject)
   .expectResponseType(MyResponse.class)
-  .executeAsync(new Callback<MyResponse>, HasuraException>() {
+  .enqueue(new Callback<MyResponse>, HasuraException>() {
                     @Override
                     public void onSuccess(MyResponse response) {
                       //Handle response
@@ -254,7 +254,7 @@ The syntax for the query template service remains the same as `Data Service` exc
 client.useQueryTemplateService("templateName") 
   .setRequestBody(JsonObject)
   .expectResponseType(MyResponse.class)
-  .executeAsync(new Callback<MyResponse>, HasuraException>() {
+  .enqueue(new Callback<MyResponse>, HasuraException>() {
                     @Override
                     public void onSuccess(MyResponse response) {
                       //Handle response
