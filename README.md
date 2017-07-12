@@ -197,7 +197,8 @@ client.useDataService()
 In the above method, there are a few things to be noted :
 - `.setRequestBody()`: This is an overloaded method which accepts either an object of type `JsonObject` or a POJO (ensure that the JSON representation of this object is correct)
 - `.expectResponseType()`: Specify the POJO representation of the expected response.
-***Note***: In case you are expecting an array response, use .expectResponseTypeArrayOf()
+
+***Note***: In case you are expecting an array response, use `.expectResponseTypeArrayOf()`
 
 ```
 If the HasuraUser in the HasuraClient is loggedin/signedup then every call made by the HasuraClient will be 
