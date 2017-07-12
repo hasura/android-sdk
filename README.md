@@ -71,7 +71,7 @@ ProjectConfig config = new ProjectConfig.Builder()
 Use the above project config to initialise Hasura.
 
 ```java
-Hasura.setConfig(config)
+Hasura.setProjectConfig(config)
   .enableLogs() // not included by default
   .initialise(this);
 ```
