@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 import io.hasura.sdk.Call;
@@ -72,6 +74,12 @@ public class HasuraQuery<T> extends Call<T, HasuraException> {
 
         public Builder setRequestBody(JsonObject requestBody) {
             this.requestbodyJSON = requestBody;
+            return this;
+        }
+
+        public Builder setRequestBody(JSONObject requestBody) {
+            String jsonString = requestBody.toString();
+            this.requestbodyJSON = new Gson().fromJson(jsonString, JsonObject.class);
             return this;
         }
 
