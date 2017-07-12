@@ -18,6 +18,7 @@ import io.hasura.sdk.exception.HasuraInitException;
 import io.hasura.sdk.HasuraUser;
 import io.hasura.sdk.responseListener.AuthResponseListener;
 import io.hasura.sdk.exception.HasuraException;
+import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.responseListener.SignUpResponseListener;
 
 
@@ -75,8 +76,8 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
             Log.i(TAG, "Logged in present: " + user.toString());
             ToDoActivity.startActivity(this);
         }
-
         user.setMobile("8861503583");
+
 
     }
 

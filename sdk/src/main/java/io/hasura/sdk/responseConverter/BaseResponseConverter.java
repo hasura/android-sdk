@@ -42,7 +42,12 @@ abstract class BaseResponseConverter<K> implements Converter<K, HasuraException>
             handleErrorResponse(errCode);
             return new HasuraException(errCode, err.getMessage());
         } catch (HasuraJsonException e) {
-            return new HasuraException(HasuraErrorCode.INTERNAL_ERROR, e);
+            try {
+                String responseString = response.body().string();
+                return new HasuraException(HasuraErrorCode.JSON_PARSE_ERROR, "JSON Parse Error: For response -> " + responseString);
+            } catch (IOException ioE) {
+                return new HasuraException(HasuraErrorCode.INTERNAL_ERROR, ioE);
+            }
         }
     }
 

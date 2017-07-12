@@ -11,6 +11,7 @@ public enum HasuraErrorCode {
     CONNECTION_ERROR("connection-error"),
     USER_ALREADY_EXISTS("user-already-exists"),
     INTERNAL_ERROR("internal-error"),
+    BAD_REQUEST("bad-request"),
     UNEXPECTED("unexpected"),
     JSON_PARSE_ERROR("json-parse-error"),
     PASSWORD_TOO_SHORT("short-password"),

@@ -1,9 +1,15 @@
 package io.hasura.android_sdk.activity;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +18,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
@@ -25,6 +37,7 @@ import io.hasura.android_sdk.models.TodoReturningResponse;
 import io.hasura.android_sdk.models.UpdateTodoRequest;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraClient;
+import io.hasura.sdk.ProjectConfig;
 import io.hasura.sdk.model.response.FileUploadResponse;
 import io.hasura.sdk.responseListener.FileDownloadResponseListener;
 import io.hasura.sdk.query.HasuraQuery;
@@ -69,30 +82,120 @@ public class ToDoActivity extends BaseActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
         fetchTodosFromDB();
+    }
 
-        client.asRole("customrole")
-                .useFileStoreService()
-                .downloadFile("qweqwewqe", new FileDownloadResponseListener() {
+
+    static int PERM_CODE = 123213;
+
+    public boolean shouldAskForPermission() {
+        return ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED;
+    }
+
+    @TargetApi(23)
+    public void askPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            //ask for permission
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, PERM_CODE);
+        }
+    }
+
+
+    public void uploadFile() {
+        File directory = new File("/storage/3332-6230/DCIM/DCIM/Screenshots");
+
+        if (directory.exists()) {
+            Log.i("Files", "Dir exists");
+        } else {
+            Log.i("Files", "Dir does not exist");
+        }
+
+        File[] files = directory.listFiles();
+
+        Log.d("Files", "Size: " + files.length);
+        for (int i = 0; i < files.length; i++) {
+            Log.d("Files", "FileName:" + files[i].getName());
+        }
+
+
+        File file = new File(directory, "photo.png");
+
+        if (file.exists()) {
+            Log.i(TAG, "File exists");
+        } else {
+            Log.i(TAG, "File does not exist");
+        }
+
+
+        client.useFileStoreService()
+                .uploadFile("asdsadasdadasdads", file, "image/png", new FileUploadResponseListener() {
                     @Override
-                    public void onDownloadComplete(byte[] data) {
-                        Log.i(TAG, "DownloadComplete");
+                    public void onUploadComplete(FileUploadResponse response) {
+                        Log.i(TAG, "Uploaded");
                     }
 
                     @Override
-                    public void onDownloadFailed(HasuraException e) {
-
-                    }
-
-                    @Override
-                    public void onDownloading(float completedPercentage) {
-                        Log.i(TAG, "DownloadingFile: " + completedPercentage);
+                    public void onUploadFailed(HasuraException e) {
+                        e.printStackTrace();
+                        Log.i(TAG, "Upload Failed");
                     }
                 });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == PERM_CODE) {
+
+            for (String perm : permissions) {
+                Log.i(TAG, perm);
+            }
+
+            for (int result : grantResults) {
+                Log.i(TAG, result + "");
+            }
+        }
 
     }
 
     private void fetchTodosFromDB() {
         showProgressIndicator();
+
+        //test for JSONObject
+        try {
+            JSONObject jsonObject = new JSONObject("  {\"type\":\"select\"," +
+                    " \"args\":{" +
+                    "\"table\":\"todo\", \"columns\":[\"*\"]" +
+                    "}" +
+                    "}");
+
+            client.useDataService()
+                    .setRequestBody(jsonObject)
+                    .expectResponseTypeArrayOf(TodoRecord.class)
+                    .enqueue(new Callback<List<TodoRecord>, HasuraException>() {
+                        @Override
+                        public void onSuccess(List<TodoRecord> response) {
+
+                            for (TodoRecord record : response) {
+                                Log.i("ResponseRecord", record.toString());
+                            }
+                            hideProgressIndicator();
+                            adapter.setData(response);
+                        }
+
+                        @Override
+                        public void onFailure(HasuraException e) {
+                            hideProgressIndicator();
+                            handleError(e);
+                        }
+                    });
+
+        } catch (JSONException e) {
+
+        }
+
         client.useDataService()
                 .setRequestBody(new SelectTodoRequest(user.getId()))
                 .expectResponseTypeArrayOf(TodoRecord.class)
@@ -100,8 +203,8 @@ public class ToDoActivity extends BaseActivity {
                     @Override
                     public void onSuccess(List<TodoRecord> response) {
 
-                        for (TodoRecord record: response) {
-                            Log.i("ResponseRecord",record.toString());
+                        for (TodoRecord record : response) {
+                            Log.i("ResponseRecord", record.toString());
                         }
                         hideProgressIndicator();
                         adapter.setData(response);
