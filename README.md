@@ -390,6 +390,10 @@ Hasura.setProjectConfig(new HasuraConfig.Builder()
 MyCustomService cs = client.useCustomService(MyCustomInterface.class);
 ```
 
+##### Bonus: Handle the Response 
+
+`RetrofitCallbackHandler` is a helper class which you can use to handle the responses from your custom APIs and parse errors.
+
 ISSUES
 ------
 
