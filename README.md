@@ -60,13 +60,16 @@ Add the dependency
 You set the project name and other hasura-project related things in Project Config object.
 
 ```java
+//Minimum Config
 ProjectConfig config = new ProjectConfig.Builder()
                  .setProjectName("projectName") // or it can be .setCustomBaseDomain("myCustomDomain.com")
-                 .enableOverHttp() // if not included, then every network call is made over https by default
-                 .setDefaultRole("customDefaultRole") // if not included then "user" role is used by default
-                 .setApiVersion(2) //if not included v1 is used by default
                  .build()
 ```
+Other methods available are :
+
+- .enableOverHttp() // if included, then every network call is made over http (https is default)
+- .setDefaultRole("customDefaultRole") // if not included then "user" role is used by default
+- .setApiVersion(2) //if not included v1 is used by default 
 
 Use the above project config to initialise Hasura.
 
@@ -271,13 +274,20 @@ client.useQueryTemplateService("templateName")
 
 ### Filestore Service
 
-Hasura provides a filestore service, which can be used to upload and download files. 
+Hasura provides a filestore service, which can be used to upload and download files. To use the Filestore service properly, kindly take a look at the docs [here](https://docs.hasura.io/0.13/ref/hasura-microservices/filestore/index.html).
 
 #### Upload File
 
+The upload file method accepts the following: 
+
+- either a `File` object or a `byte` array (byte[]) which is to be uploaded.
+- a `mimetype` of the file.
+- `FileUploadResponseListener` which is an interface that handles the response.
+- FileId (optional): Every uploaded file has an unique Id associated with it. You can optionally specify this fileId on     the `uploadFile` method. In case it is not, the SDK automatically assigns a unique Id for the file.
+
 ```java
 client.useFileStoreService()
-                .uploadFile("fileId", /*File*/, /*mimeType*/, new FileUploadResponseListener() {
+                .uploadFile(/*File or byte[]*/, /*mimeType*/, new FileUploadResponseListener() {
                     @Override
                     public void onUploadComplete(FileUploadResponse response) {
                       //Success
@@ -291,9 +301,9 @@ client.useFileStoreService()
 ```
 
 `FileUploadResponse` object in the above response contains the following:
-- file_id: The file id specified during upload
-- user_id: The id of the user who uploaded the file
-- created_at : The time string for when this file was uploaded/created
+- file_id: The uniqiue Id of the file that was uploaded.
+- user_id: The id of the user who uploaded the file.
+- created_at : The time string for when this file was uploaded/created.
 
 #### Download File
 
@@ -319,7 +329,7 @@ client.useFileStoreService()
 
 ### Custom Service
 
-
+In addition to the Data, Auth and FileStore services, you can also deploy your own custom service on Hasura. For such cases, you can still utilize the session management of the SDK to make your APIs. Currently, we have support for [Retrofit](http://square.github.io/retrofit/).
 
 #### Using a custom service - Retrofit Support 
 
