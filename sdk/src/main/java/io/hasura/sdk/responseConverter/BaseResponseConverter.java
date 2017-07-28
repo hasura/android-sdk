@@ -1,7 +1,5 @@
 package io.hasura.sdk.responseConverter;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -31,7 +29,10 @@ abstract class BaseResponseConverter<K> implements Converter<K, HasuraException>
 
     @Override
     public HasuraException castException(Exception e) {
-        return (HasuraException) e;
+        if (e instanceof HasuraException) {
+            return (HasuraException) e;
+        }
+        return new HasuraException(HasuraErrorCode.UNKNOWN, "Unable to cast Exeception : " + e.getMessage());
     }
 
     //TODO: UGLY -FIX/CHANGE
