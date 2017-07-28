@@ -1,8 +1,8 @@
 package io.hasura.sdk;
 
-import android.util.Log;
-
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.hasura.sdk.exception.HasuraException;
 import io.hasura.sdk.model.request.AuthRequest;
@@ -18,6 +18,7 @@ import io.hasura.sdk.model.response.ChangePasswordResponse;
 import io.hasura.sdk.model.response.GetCredentialsResponse;
 import io.hasura.sdk.model.response.LogoutResponse;
 import io.hasura.sdk.model.response.MessageResponse;
+import io.hasura.sdk.model.response.SocialLoginResponse;
 import io.hasura.sdk.responseListener.AuthResponseListener;
 import io.hasura.sdk.responseListener.ChangeEmailResponseListener;
 import io.hasura.sdk.responseListener.ChangeMobileResponseListener;
@@ -49,7 +50,10 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
 
     interface StateChangeListener {
         void onAuthTokenChanged(String authToken);
+
         void onRolesChanged(String[] roles);
+
+        void onSocialLoginAccessTokenChanged(Map<HasuraSocialLoginType, String> map);
     }
 
     private Integer id;
@@ -59,6 +63,7 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
     private String[] roles;
     private String authToken;
     private String password;
+    private Map<HasuraSocialLoginType, String> socialLoginTypeAccessTokenMap = new HashMap<>();
 
     private AnonymousApiService anonApiService;
     private UserApiService userApiService;
@@ -122,7 +127,8 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
         this.stateChangeListener = listener;
     }
 
-    private HasuraUser() {}
+    private HasuraUser() {
+    }
 
     private HasuraUser(HasuraUser user) {
         setId(user.getId());
@@ -168,6 +174,11 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public void setAccesstokenForSocialLogin(HasuraSocialLoginType type, String accessToken) {
+        socialLoginTypeAccessTokenMap.put(type, accessToken);
+        this.stateChangeListener.onSocialLoginAccessTokenChanged(socialLoginTypeAccessTokenMap);
     }
 
     public void setRoles(String[] roles) {
@@ -263,6 +274,37 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
         }
     }
 
+    private class SocialAuthResponseCallbackHandler implements Callback<SocialLoginResponse, HasuraException> {
+
+        AuthResponseListener listener;
+        HasuraSocialLoginType type;
+
+        SocialAuthResponseCallbackHandler(HasuraSocialLoginType type, AuthResponseListener listener) {
+            this.listener = listener;
+            this.type = type;
+        }
+
+        @Override
+        public void onSuccess(SocialLoginResponse response) {
+            setId(response.getId());
+            setRoles(response.getRoles());
+            setAuthToken(response.getAuthToken());
+
+            HasuraSessionStore.saveUser(HasuraUser.this);
+
+            if (listener != null) {
+                listener.onSuccess("Login Successful");
+            }
+        }
+
+        @Override
+        public void onFailure(HasuraException e) {
+            if (listener != null) {
+                listener.onFailure(e);
+            }
+        }
+    }
+
     private class SuccessFailureCallbackHandler implements Callback<MessageResponse, HasuraException> {
 
         SuccessFailureResponseListener listener;
@@ -332,7 +374,7 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
     @Override
     public void socialLogin(HasuraSocialLoginType type, String token, final AuthResponseListener listener) {
         anonApiService.socialAuth(new SocialLoginRequest(type.getCode(), token))
-                .enqueue(new AuthResponseCallbackHandler(listener));
+                .enqueue(new SocialAuthResponseCallbackHandler(type, listener));
     }
 
     @Override
@@ -530,7 +572,7 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
 
                     @Override
                     public void onFailure(HasuraException e) {
-                        if(listener != null) {
+                        if (listener != null) {
                             listener.onFailure(e);
                         }
                     }

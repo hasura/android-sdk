@@ -18,15 +18,15 @@ public class SocialLoginResponse {
     @SerializedName("access_token")
     String access_token;
 
-    public int getHasuraId() {
+    public int getId() {
         return hasuraId;
     }
 
-    public String[] getHasuraRoles() {
+    public String[] getRoles() {
         return hasuraRoles;
     }
 
-    public String getSessionId() {
+    public String getAuthToken() {
         return auth_token;
     }
 

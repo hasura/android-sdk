@@ -96,7 +96,7 @@ public class AnonymousApiService extends HasuraHttpService {
      * @return  {@link SocialLoginResponse}
      * @throws HasuraException
      */
-    public Call<AuthResponse, HasuraException> socialAuth(SocialLoginRequest r) {
+    public Call<SocialLoginResponse, HasuraException> socialAuth(SocialLoginRequest r) {
         // the URL is prepared inside the request class
         String url = r.prepareRequestURL();
         Type respType = new TypeToken<SocialLoginResponse>() {

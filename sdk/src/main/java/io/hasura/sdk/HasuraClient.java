@@ -40,7 +40,12 @@ public class HasuraClient {
 
         @Override
         public void onRolesChanged(String[] roles) {
+            //TODO: Handle
+        }
 
+        @Override
+        public void onSocialLoginAccessTokenChanged(Map<HasuraSocialLoginType, String> map) {
+            //TODO: Handle
         }
     };
 
