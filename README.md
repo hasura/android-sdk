@@ -1,7 +1,7 @@
 Android SDK
 ===========
 
-The Android SDK for Hasura. 
+The Android SDK for Hasura.
 
 
 Installation
@@ -22,11 +22,11 @@ allprojects {
 }
 ```
 
-Next, Add the following to your app level build.gradle 
+Next, Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura.android-sdk:sdk:v0.0.7' 
+   compile 'com.github.hasura.android-sdk:sdk:v0.0.7'
 }
 ```
 
@@ -34,7 +34,7 @@ Using Maven:
 
 Add the JitPack repository to your build file
 
-```xml 
+```xml
 <repositories>
   <repository>
     <id>jitpack.io</id>
@@ -69,7 +69,7 @@ Other methods available are :
 
 - .enableOverHttp() // if included, then every network call is made over http (https is default)
 - .setDefaultRole("customDefaultRole") // if not included then "user" role is used by default
-- .setApiVersion(2) //if not included v1 is used by default 
+- .setApiVersion(2) //if not included v1 is used by default
 
 Use the above project config to initialise Hasura.
 
@@ -78,17 +78,17 @@ Hasura.setProjectConfig(config)
   .enableLogs() // not included by default
   .initialise(this);
 ```
-  
+
 ***Note***: Initialisation **MUST** be done before you use the SDK.The best place to initialise Hasura would be in your `application` class or in your Launcher Activity.
 
 Hasura Client
 -------------
 
-The `HasuraClient` object is the most functional feature of the SDK. It is built using the project config specified on initialisation. 
+The `HasuraClient` object is the most functional feature of the SDK. It is built using the project config specified on initialisation.
 You can get an instance of the client only from Hasura, like so :
 
 ```java
-HasuraClient client = Hasura.getClient(); 
+HasuraClient client = Hasura.getClient();
 ```
 
 ### Hasura User
@@ -111,7 +111,7 @@ user.signUp(new SignUpResponseListener() {
             public void onSuccessAwaitingVerification(HasuraUser user) {
               //The user is registered on Hasura, but either his mobile or email needs to be verified.
             }
-  
+
             @Override
             public void onSuccess(HasuraUser user) {
               //Now Hasura.getClient().getCurrentUser() will have this user
@@ -132,7 +132,7 @@ user.signUp(new SignUpResponseListener() {
 user.setUsername("username");
 user.setPassword("password");
 user.login(new AuthResponseListener() {
-           
+
             @Override
             public void onSuccess(HasuraUser user) {
               //Now Hasura.getClient().getCurrentUser() will have this user
@@ -146,11 +146,11 @@ user.login(new AuthResponseListener() {
 ```    
 
 #### LoggedIn User
-        
+
 Each time a `HasuraUser` is signed up or logged in, the session is cached by the `HasuraClient`. Hence, you do not need to log the user in each time your app starts.
 
 ```java
-HasuraUser user = client.getUser(); 
+HasuraUser user = client.getUser();
 if (user.isLoggedIn()) {
   //This user is logged in
 } else {
@@ -160,13 +160,13 @@ if (user.isLoggedIn()) {
 
 #### Log Out
 
-To log the user out, simple call `.logout` method on the user object. 
+To log the user out, simple call `.logout` method on the user object.
 
 ```java
 user.logout(new LogoutResponseListener() {
             @Override
             public void onSuccess(String message) {
-                
+
             }
 
             @Override
@@ -181,7 +181,7 @@ user.logout(new LogoutResponseListener() {
 Hasura provides out of the box data apis on the Tables and views you make in your project. To learn more about how they work, check out the docs [here](https://hasura.io/_docs/platform/0.6/getting-started/4-data-query.html)
 
 ```java
-client.useDataService() 
+client.useDataService()
   .setRequestBody(JsonObject)
   .expectResponseType(MyResponse.class)
   .enqueue(new Callback<MyResponse>, HasuraException>() {
@@ -204,11 +204,11 @@ In the above method, there are a few things to be noted :
 ***Note***: In case you are expecting an array response, use `.expectResponseTypeArrayOf()`. *All SELECT queries to the data service will return an array response.*
 
 ```
-If the HasuraUser in the HasuraClient is loggedin/signedup then every call made by the HasuraClient will be 
-authenticated by default with "user" as the default role (This default role can be changed when building the project config) 
+If the HasuraUser in the HasuraClient is loggedin/signedup then every call made by the HasuraClient will be
+authenticated by default with "user" as the default role (This default role can be changed when building the project config)
 ```
 
-In case you want to make the above call for an anonymous user 
+In case you want to make the above call for an anonymous user
 
 ```java
 client.asAnonymousRole()
@@ -228,7 +228,7 @@ client.asAnonymousRole()
                 });
 ```
 
-In case you want to make the above call for a custom user 
+In case you want to make the above call for a custom user
 
 ```java
 client.asRole("customRole") //throws an error if the current user does not have this role
@@ -252,10 +252,10 @@ client.asRole("customRole") //throws an error if the current user does not have 
 
 ### Query Template Service
 
-The syntax for the query template service remains the same as `Data Service` except for setting the name of the query template being used. 
+The syntax for the query template service remains the same as `Data Service` except for setting the name of the query template being used.
 
 ```java
-client.useQueryTemplateService("templateName") 
+client.useQueryTemplateService("templateName")
   .setRequestBody(JsonObject)
   .expectResponseType(MyResponse.class)
   .enqueue(new Callback<MyResponse>, HasuraException>() {
@@ -278,7 +278,7 @@ Hasura provides a filestore service, which can be used to upload and download fi
 
 #### Upload File
 
-The upload file method accepts the following: 
+The upload file method accepts the following:
 
 - either a `File` object or a `byte` array (byte[]) which is to be uploaded.
 - a `mimetype` of the file.
@@ -322,7 +322,7 @@ client.useFileStoreService()
 
                     @Override
                     public void onDownloading(float completedPercentage) {
-                      //download percentage 
+                      //download percentage
                     }
                 });
 ```
@@ -331,7 +331,7 @@ client.useFileStoreService()
 
 In addition to the Data, Auth and FileStore services, you can also deploy your own custom service on Hasura. For such cases, you can still utilize the session management of the SDK to make your APIs. Currently, we have support for [Retrofit](http://square.github.io/retrofit/).
 
-#### Using a custom service - Retrofit Support 
+#### Using a custom service - Retrofit Support
 
 - Let's say you have a custom service set up on Hasura called "api"
 - Your external endpoint for this custom service would be -> "api.<project-name>.hasura-app.io"
@@ -341,11 +341,11 @@ In addition to the Data, Auth and FileStore services, you can also deploy your o
 
 Using Gradle:
 
-Add the following to your app level build.gradle 
+Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura:android-sdk:custom-service-retrofit:v0.0.5' 
+   compile 'com.github.hasura:android-sdk:custom-service-retrofit:v0.0.5'
 }
 ```
 
@@ -390,9 +390,14 @@ Hasura.setProjectConfig(new HasuraConfig.Builder()
 MyCustomService cs = client.useCustomService(MyCustomInterface.class);
 ```
 
-##### Bonus: Handle the Response 
+##### Bonus: Handle the Response
 
 `RetrofitCallbackHandler` is a helper class which you can use to handle the responses from your custom APIs and parse errors.
+
+EXAMPLES
+--------
+
+Check our [this](https://github.com/hasura/Modules-Android) for sample apps built using the SDK.
 
 ISSUES
 ------
