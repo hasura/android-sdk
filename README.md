@@ -26,7 +26,7 @@ Next, Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura.android-sdk:sdk:v0.0.7'
+   compile 'com.github.hasura.android-sdk:sdk:v0.0.8'
 }
 ```
 
@@ -49,7 +49,7 @@ Add the dependency
 <dependency>
   <groupId>com.github.hasura.android-sdk</groupId>
   <artifactId>sdk</artifactId>
-  <version>v0.0.7/version>
+  <version>v0.0.8/version>
 </dependency>
 ```
 
