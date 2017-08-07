@@ -13,10 +13,6 @@ import io.hasura.sdk.HasuraTokenInterceptor;
 public abstract class CustomService<K> {
     private HashMap<HasuraTokenInterceptor, K> apiInterfaceMap = new HashMap<>();
 
-    private String serviceName;
-    private Class<K> clazz;
-    private HashMap<String, String> additionalHeaders;
-    private CustomServiceBuilder serviceBuilder;
     private String baseUrl;
 
     public abstract Class<K> getClazz();
@@ -31,17 +27,10 @@ public abstract class CustomService<K> {
         this.baseUrl = baseUrl;
     }
 
-    public CustomService() {
-        this.clazz = getClazz();
-        this.serviceName = getServiceName();
-        this.additionalHeaders = getAdditionalHeaders();
-        this.serviceBuilder = getServiceBuilder();
-    }
-
     @NonNull
     public K getInterface(HasuraTokenInterceptor hasuraTokenInterceptor) {
         if (!apiInterfaceMap.containsKey(hasuraTokenInterceptor)) {
-            K apiInterface = serviceBuilder.getApiInterface(hasuraTokenInterceptor, baseUrl, additionalHeaders, clazz);
+            K apiInterface = getServiceBuilder().getApiInterface(hasuraTokenInterceptor, baseUrl, getAdditionalHeaders(), getClazz());
             apiInterfaceMap.put(hasuraTokenInterceptor, apiInterface);
             return apiInterface;
         }
