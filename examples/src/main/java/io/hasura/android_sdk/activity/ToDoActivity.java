@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.List;
 
+import io.hasura.android_sdk.ApiInterface;
 import io.hasura.android_sdk.R;
 import io.hasura.android_sdk.models.DeleteTodoRequest;
 import io.hasura.android_sdk.models.InsertTodoRequest;
@@ -46,6 +47,8 @@ import io.hasura.sdk.responseListener.FileUploadResponseListener;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.Callback;
 import io.hasura.sdk.exception.HasuraException;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class ToDoActivity extends BaseActivity {
 
@@ -163,38 +166,20 @@ public class ToDoActivity extends BaseActivity {
     private void fetchTodosFromDB() {
         showProgressIndicator();
 
-        //test for JSONObject
-        try {
-            JSONObject jsonObject = new JSONObject("  {\"type\":\"select\"," +
-                    " \"args\":{" +
-                    "\"table\":\"todo\", \"columns\":[\"*\"]" +
-                    "}" +
-                    "}");
-
-            client.useDataService()
-                    .setRequestBody(jsonObject)
-                    .expectResponseTypeArrayOf(TodoRecord.class)
-                    .enqueue(new Callback<List<TodoRecord>, HasuraException>() {
-                        @Override
-                        public void onSuccess(List<TodoRecord> response) {
-
-                            for (TodoRecord record : response) {
-                                Log.i("ResponseRecord", record.toString());
-                            }
-                            hideProgressIndicator();
-                            adapter.setData(response);
-                        }
-
-                        @Override
-                        public void onFailure(HasuraException e) {
-                            hideProgressIndicator();
-                            handleError(e);
-                        }
-                    });
-
-        } catch (JSONException e) {
-
-        }
+        //Custom service usage example
+//        client.useCustomService(ApiInterface.class)
+//                .getTodos(new SelectTodoRequest(user.getId()))
+//                .enqueue(new retrofit2.Callback<List<TodoRecord>>() {
+//                    @Override
+//                    public void onResponse(Call<List<TodoRecord>> call, Response<List<TodoRecord>> response) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Call<List<TodoRecord>> call, Throwable t) {
+//
+//                    }
+//                });
 
         client.useDataService()
                 .setRequestBody(new SelectTodoRequest(user.getId()))

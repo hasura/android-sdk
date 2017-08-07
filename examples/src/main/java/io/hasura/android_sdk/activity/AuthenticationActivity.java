@@ -8,8 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.List;
+
 import io.hasura.android_sdk.ApiInterface;
 import io.hasura.android_sdk.R;
+import io.hasura.android_sdk.models.SelectTodoRequest;
+import io.hasura.android_sdk.models.TodoRecord;
 import io.hasura.custom_service_retrofit.RetrofitCustomService;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraClient;
@@ -20,6 +24,9 @@ import io.hasura.sdk.responseListener.AuthResponseListener;
 import io.hasura.sdk.exception.HasuraException;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
 import io.hasura.sdk.responseListener.SignUpResponseListener;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class AuthenticationActivity extends BaseActivity implements View.OnClickListener {
@@ -77,8 +84,6 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
             ToDoActivity.startActivity(this);
         }
         user.setMobile("8861503583");
-
-
     }
 
     private void signUp() {
