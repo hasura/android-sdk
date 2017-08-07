@@ -26,7 +26,7 @@ Next, Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura.android-sdk:sdk:v0.0.8'
+   compile 'com.github.hasura.android-sdk:sdk:v0.0.9'
 }
 ```
 
@@ -49,7 +49,7 @@ Add the dependency
 <dependency>
   <groupId>com.github.hasura.android-sdk</groupId>
   <artifactId>sdk</artifactId>
-  <version>v0.0.8/version>
+  <version>v0.0.9/version>
 </dependency>
 ```
 
@@ -345,7 +345,7 @@ Add the following to your app level build.gradle
 
 ```groovy
 dependencies {
-   compile 'com.github.hasura:android-sdk:custom-service-retrofit:v0.0.5'
+   compile 'com.github.hasura:android-sdk:custom-service-retrofit:v0.0.999999999'
 }
 ```
 
@@ -357,7 +357,7 @@ Add the dependency
 <dependency>
   <groupId>com.github.hasura.android-sdk</groupId>
   <artifactId>custom-service-retrofit</artifactId>
-  <version>v0.0.5/version>
+  <version>v0.0.9/version>
 </dependency>
 ```
 
