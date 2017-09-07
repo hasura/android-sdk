@@ -2,13 +2,13 @@ package io.hasura.sdk.model.response;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
+
 /**
  * Created by jaison on 25/05/17.
  */
 
 public class AuthResponse {
-    @SerializedName("auth_token")
-    private String authToken;
 
     @SerializedName("hasura_id")
     private Integer id;
@@ -16,11 +16,23 @@ public class AuthResponse {
     @SerializedName("hasura_roles")
     private String[] roles;
 
+    @SerializedName("auth_token")
+    private String authToken;
+
+    @SerializedName("email")
+    private String email;
+
+    @SerializedName("mobile")
+    private String mobile;
+
+    @SerializedName("username")
+    private String username;
+
     @SerializedName("new_user")
-    private boolean newUser;
+    boolean newUser;
 
     @SerializedName("access_token")
-    private String access_token;
+    String access_token;
 
     public boolean isNewUser() {
         return newUser;
@@ -42,17 +54,30 @@ public class AuthResponse {
         return roles;
     }
 
+    public String getEmail() {
+        return email;
+    }
 
+    public String getMobile() {
+        return mobile;
+    }
 
+    public String getUsername() {
+        return username;
+    }
 
     @Override
     public String toString() {
         return "AuthResponse{" +
-                "authToken='" + authToken + '\'' +
-                ", id=" + id +
-                ", roles=" + roles +
+                "id=" + id +
+                ", roles=" + Arrays.toString(roles) +
+                ", authToken='" + authToken + '\'' +
+                ", email='" + email + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", username='" + username + '\'' +
                 ", newUser=" + newUser +
                 ", access_token='" + access_token + '\'' +
                 '}';
     }
+
 }

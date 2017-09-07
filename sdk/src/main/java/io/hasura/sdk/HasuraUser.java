@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.hasura.sdk.authProvider.HasuraAuthProvider;
 import io.hasura.sdk.exception.HasuraException;
 import io.hasura.sdk.model.request.AuthRequest;
 import io.hasura.sdk.model.request.ChangeEmailRequest;
@@ -11,24 +12,18 @@ import io.hasura.sdk.model.request.ChangeMobileRequest;
 import io.hasura.sdk.model.request.ChangePasswordRequest;
 import io.hasura.sdk.model.request.ChangeUserNameRequest;
 import io.hasura.sdk.model.request.DeleteAccountRequest;
-import io.hasura.sdk.model.request.ResendEmailRequest;
-import io.hasura.sdk.model.request.SocialLoginRequest;
 import io.hasura.sdk.model.response.AuthResponse;
 import io.hasura.sdk.model.response.ChangePasswordResponse;
 import io.hasura.sdk.model.response.GetCredentialsResponse;
 import io.hasura.sdk.model.response.LogoutResponse;
 import io.hasura.sdk.model.response.MessageResponse;
-import io.hasura.sdk.model.response.SocialLoginResponse;
 import io.hasura.sdk.responseListener.AuthResponseListener;
 import io.hasura.sdk.responseListener.ChangeEmailResponseListener;
 import io.hasura.sdk.responseListener.ChangeMobileResponseListener;
 import io.hasura.sdk.responseListener.ChangePasswordResponseListener;
 import io.hasura.sdk.responseListener.ChangeUserNameResponseListener;
 import io.hasura.sdk.responseListener.DeleteAccountResponseListener;
-import io.hasura.sdk.responseListener.EmailVerificationSenderListener;
 import io.hasura.sdk.responseListener.LogoutResponseListener;
-import io.hasura.sdk.responseListener.MobileConfirmationResponseListener;
-import io.hasura.sdk.responseListener.OtpStatusListener;
 import io.hasura.sdk.responseListener.SignUpResponseListener;
 import io.hasura.sdk.responseListener.SuccessFailureResponseListener;
 import io.hasura.sdk.responseListener.SyncStatusListener;
@@ -68,6 +63,11 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
     private AnonymousApiService anonApiService;
     private UserApiService userApiService;
     private StateChangeListener stateChangeListener;
+    private UserApiInterceptor userApiInterceptor = new UserApiInterceptor();
+
+    public Interceptor getUserApiInterceptor() {
+        return userApiInterceptor;
+    }
 
     private class UserApiInterceptor implements Interceptor {
 
@@ -121,9 +121,10 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
             authClientBuilder.addInterceptor(logging);
         }
 
-        authClientBuilder.addInterceptor(new UserApiInterceptor());
-        this.anonApiService = new AnonymousApiService(authUrl, anonClientBuilder.build());
+        authClientBuilder.addInterceptor(userApiInterceptor);
+
         this.userApiService = new UserApiService(authUrl, authClientBuilder.build());
+        this.anonApiService = new AnonymousApiService(authUrl, anonClientBuilder.build());
         this.stateChangeListener = listener;
     }
 
@@ -172,43 +173,48 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
         return authToken;
     }
 
-    public void setId(Integer id) {
+    private void setId(Integer id) {
         this.id = id;
     }
 
-    public void setAccesstokenForSocialLogin(HasuraSocialLoginType type, String accessToken) {
+    private void setAccesstokenForSocialLogin(HasuraSocialLoginType type, String accessToken) {
         socialLoginTypeAccessTokenMap.put(type, accessToken);
         this.stateChangeListener.onSocialLoginAccessTokenChanged(socialLoginTypeAccessTokenMap);
     }
 
-    public void setRoles(String[] roles) {
+    private void setRoles(String[] roles) {
         this.roles = roles;
         this.stateChangeListener.onRolesChanged(roles);
     }
 
-    public void setAuthToken(String authToken) {
+    private void setAuthToken(String authToken) {
         this.authToken = authToken;
         this.stateChangeListener.onAuthTokenChanged(authToken);
     }
 
-    public void setUsername(String username) {
+    private void setUsername(String username) {
         this.username = username;
     }
 
-    public void setPassword(String password) {
+    private void setPassword(String password) {
         this.password = password;
     }
 
-    public void setEmail(String email) {
+    private void setEmail(String email) {
         this.email = email;
     }
 
-    public void setMobile(String mobile) {
+    private void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
-    private AuthRequest getAuthRequest() {
-        return new AuthRequest(this.username, this.email, this.mobile, this.password);
+    private void setSession(AuthResponse response) {
+        setId(response.getId());
+        setAuthToken(response.getAuthToken());
+        setRoles(response.getRoles());
+        setEmail(response.getEmail());
+        setMobile(response.getMobile());
+        setUsername(response.getUsername());
     }
 
     private class SignUpResponseCallbackHandler implements Callback<AuthResponse, HasuraException> {
@@ -221,9 +227,7 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
 
         @Override
         public void onSuccess(AuthResponse response) {
-            setId(response.getId());
-            setRoles(response.getRoles());
-            setAuthToken(response.getAuthToken());
+            setSession(response);
             HasuraSessionStore.saveUser(HasuraUser.this);
 
             if (response.getAuthToken() == null) {
@@ -255,10 +259,7 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
 
         @Override
         public void onSuccess(AuthResponse response) {
-            setId(response.getId());
-            setRoles(response.getRoles());
-            setAuthToken(response.getAuthToken());
-
+            setSession(response);
             HasuraSessionStore.saveUser(HasuraUser.this);
 
             if (listener != null) {
@@ -274,240 +275,26 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
         }
     }
 
-    private class SocialAuthResponseCallbackHandler implements Callback<SocialLoginResponse, HasuraException> {
-
-        AuthResponseListener listener;
-        HasuraSocialLoginType type;
-
-        SocialAuthResponseCallbackHandler(HasuraSocialLoginType type, AuthResponseListener listener) {
-            this.listener = listener;
-            this.type = type;
-        }
-
-        @Override
-        public void onSuccess(SocialLoginResponse response) {
-            setId(response.getId());
-            setRoles(response.getRoles());
-            setAuthToken(response.getAuthToken());
-
-            HasuraSessionStore.saveUser(HasuraUser.this);
-
-            if (listener != null) {
-                listener.onSuccess("Login Successful");
-            }
-        }
-
-        @Override
-        public void onFailure(HasuraException e) {
-            if (listener != null) {
-                listener.onFailure(e);
-            }
-        }
-    }
-
-    private class SuccessFailureCallbackHandler implements Callback<MessageResponse, HasuraException> {
-
-        SuccessFailureResponseListener listener;
-
-        public SuccessFailureCallbackHandler(SuccessFailureResponseListener listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        public void onSuccess(MessageResponse response) {
-            if (listener != null) {
-                listener.onSuccess(response.getMessage());
-            }
-        }
-
-        @Override
-        public void onFailure(HasuraException e) {
-            if (listener != null) {
-                listener.onFailure(e);
-            }
-        }
+    @Override
+    public void signUp(HasuraAuthProvider provider, SignUpResponseListener listener) {
+        anonApiService.signUp(provider).enqueue(new SignUpResponseCallbackHandler(listener));
     }
 
     @Override
-    public void otpSignUp(final SignUpResponseListener listener) {
-        anonApiService.signUpForMobileOtp(getAuthRequest())
-                .enqueue(new SignUpResponseCallbackHandler(listener));
+    public void login(HasuraAuthProvider provider, AuthResponseListener listener) {
+        anonApiService.login(provider).enqueue(new AuthResponseCallbackHandler(listener));
     }
-
-    @Override
-    public void signUp(final SignUpResponseListener listener) {
-        anonApiService.signUp(getAuthRequest())
-                .enqueue(new SignUpResponseCallbackHandler(listener));
-    }
-
-    @Override
-    public void sendOtpToMobile(final OtpStatusListener listener) {
-        anonApiService.sendOtpToMobile(getAuthRequest())
-                .enqueue(new SuccessFailureCallbackHandler(listener));
-    }
-
-    @Override
-    public void resendOTP(final OtpStatusListener listener) {
-        anonApiService.resendOTP(mobile)
-                .enqueue(new SuccessFailureCallbackHandler(listener));
-    }
-
-    @Override
-    public void resendVerificationEmail(final EmailVerificationSenderListener listener) {
-        anonApiService.resendVerifyEmail(new ResendEmailRequest(email))
-                .enqueue(new SuccessFailureCallbackHandler(listener));
-    }
-
-    @Override
-    public void otpLogin(String otp, final AuthResponseListener listener) {
-        AuthRequest request = new AuthRequest(mobile, otp);
-        anonApiService.otpLogin(request)
-                .enqueue(new AuthResponseCallbackHandler(listener));
-    }
-
-    @Override
-    public void login(final AuthResponseListener listener) {
-        anonApiService.login(getAuthRequest())
-                .enqueue(new AuthResponseCallbackHandler(listener));
-    }
-
-    @Override
-    public void socialLogin(HasuraSocialLoginType type, String token, final AuthResponseListener listener) {
-        anonApiService.socialAuth(new SocialLoginRequest(type.getCode(), token))
-                .enqueue(new SocialAuthResponseCallbackHandler(type, listener));
-    }
-
-    @Override
-    public void confirmMobile(String otp, final MobileConfirmationResponseListener listener) {
-        anonApiService.confirmMobile(mobile, otp)
-                .enqueue(new SuccessFailureCallbackHandler(listener));
-    }
-
-    @Override
-    public void confirmMobileAndLogin(String otp, final AuthResponseListener listener) {
-        confirmMobile(otp, new MobileConfirmationResponseListener() {
-            @Override
-            public void onSuccess(String message) {
-                login(listener);
-            }
-
-            @Override
-            public void onFailure(HasuraException e) {
-                if (listener != null) {
-                    listener.onFailure(e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void resendOtpForMobileConfirmation(final OtpStatusListener listener) {
-        anonApiService.resendOTP(mobile)
-                .enqueue(new SuccessFailureCallbackHandler(listener));
-    }
-
 
     @Override
     public void sync(final SyncStatusListener listener) {
         userApiService.getCredentials()
-                .enqueue(new Callback<GetCredentialsResponse, HasuraException>() {
+                .enqueue(new Callback<AuthResponse, HasuraException>() {
                     @Override
-                    public void onSuccess(GetCredentialsResponse response) {
-                        setId(response.getHasuraId());
-                        setAuthToken(response.getSessionId());
-                        setRoles(response.getHasuraRoles());
+                    public void onSuccess(AuthResponse response) {
+                        setSession(response);
                         HasuraSessionStore.saveUser(HasuraUser.this);
                         if (listener != null) {
                             listener.onSuccess("Sync Successful");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void changePassword(String newPassword, final ChangePasswordResponseListener listener) {
-        userApiService.changePassword(new ChangePasswordRequest(password, newPassword))
-                .enqueue(new Callback<ChangePasswordResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(ChangePasswordResponse response) {
-                        setAuthToken(response.getAuthToken());
-                        HasuraSessionStore.saveUser(HasuraUser.this);
-                        if (listener != null) {
-                            listener.onSuccess(response.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void changeEmail(final String newEmail, final ChangeEmailResponseListener listener) {
-        userApiService.changeEmail(new ChangeEmailRequest(newEmail))
-                .enqueue(new Callback<MessageResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(MessageResponse response) {
-                        setEmail(newEmail);
-                        HasuraSessionStore.saveUser(HasuraUser.this);
-                        if (listener != null) {
-                            listener.onSuccess(response.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
-    @Override
-    public void changeMobile(final String newMobile, final ChangeMobileResponseListener listener) {
-        userApiService.changeMobile(new ChangeMobileRequest(newMobile))
-                .enqueue(new Callback<MessageResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(MessageResponse response) {
-                        setMobile(newMobile);
-                        HasuraSessionStore.saveUser(HasuraUser.this);
-                        if (listener != null) {
-                            listener.onSuccess(response.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
-    }
-
-
-    @Override
-    public void changeUsername(final String newUsername, final ChangeUserNameResponseListener listener) {
-        userApiService.changeUserName(new ChangeUserNameRequest(newUsername))
-                .enqueue(new Callback<MessageResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(MessageResponse response) {
-                        setUsername(newUsername);
-                        HasuraSessionStore.saveUser(HasuraUser.this);
-                        if (listener != null) {
-                            listener.onSuccess(response.getMessage());
                         }
                     }
 
@@ -555,28 +342,6 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
         setRoles(null);
         setAuthToken(null);
         setPassword(null);
-    }
-
-    @Override
-    public void deleteAccount(final DeleteAccountResponseListener listener) {
-        userApiService.deleteAccount(new DeleteAccountRequest(password))
-                .enqueue(new Callback<MessageResponse, HasuraException>() {
-                    @Override
-                    public void onSuccess(MessageResponse response) {
-                        HasuraSessionStore.deleteSavedUser();
-                        setAuthToken(null);
-                        if (listener != null) {
-                            listener.onSuccess(response.getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(HasuraException e) {
-                        if (listener != null) {
-                            listener.onFailure(e);
-                        }
-                    }
-                });
     }
 
 

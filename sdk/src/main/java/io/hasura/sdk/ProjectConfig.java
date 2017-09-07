@@ -22,7 +22,7 @@ public class ProjectConfig {
         this.protocol = builder.isEnabledOverHttp ? "http" : "https";
         this.defaultRole = builder.defaultRole;
         this.baseDomain = builder.baseDomain == null ? projectName + ".hasura-app.io" : builder.baseDomain;
-        this.version = "v" + builder.apiVersion;
+        this.version = "v" + DEFAULTS.API_VERSION;
     }
 
     public String getCustomServiceUrl(String customServiceName) {
@@ -38,7 +38,7 @@ public class ProjectConfig {
     }
 
     public String getAuthUrl() {
-        return getUrl(protocol, SERVICE.AUTH, baseDomain + "/");
+        return getUrl(protocol, SERVICE.AUTH, baseDomain + "/") + "v" + DEFAULTS.AUTH_API_VERSION + "/";
     }
 
     public String getQueryUrl() {
@@ -65,6 +65,7 @@ public class ProjectConfig {
         static Boolean IS_ENABLED_OVER_HTTP = false;
         static String DEFAULT_ROLE = "user";
         static Integer API_VERSION = 1;
+        static Integer AUTH_API_VERSION = 2;
     }
 
     private static class SERVICE {
@@ -79,7 +80,6 @@ public class ProjectConfig {
         String baseDomain;
         Boolean isEnabledOverHttp = DEFAULTS.IS_ENABLED_OVER_HTTP;
         String defaultRole = DEFAULTS.DEFAULT_ROLE;
-        Integer apiVersion = DEFAULTS.API_VERSION;
 
         public Builder setProjectName(String projectName) {
             this.projectName = projectName;
@@ -100,11 +100,6 @@ public class ProjectConfig {
 
         public Builder setDefaultRole(String role) {
             this.defaultRole = role;
-            return this;
-        }
-
-        public Builder setApiVersion(int version) {
-            this.apiVersion = version;
             return this;
         }
 

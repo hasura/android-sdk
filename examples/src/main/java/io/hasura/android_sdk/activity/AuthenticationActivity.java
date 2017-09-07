@@ -18,6 +18,8 @@ import io.hasura.custom_service_retrofit.RetrofitCustomService;
 import io.hasura.sdk.Hasura;
 import io.hasura.sdk.HasuraClient;
 import io.hasura.sdk.ProjectConfig;
+import io.hasura.sdk.authProvider.MobileAuthProvider;
+import io.hasura.sdk.authProvider.UsernameAuthProvider;
 import io.hasura.sdk.exception.HasuraInitException;
 import io.hasura.sdk.HasuraUser;
 import io.hasura.sdk.responseListener.AuthResponseListener;
@@ -83,13 +85,24 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
             Log.i(TAG, "Logged in present: " + user.toString());
             ToDoActivity.startActivity(this);
         }
-        user.setMobile("8861503583");
+
+
     }
 
     private void signUp() {
-        user.setUsername(username.getText().toString());
-        user.setPassword(password.getText().toString());
-        user.signUp(new SignUpResponseListener() {
+        MobileAuthProvider.sendOtp("adsad", new MobileAuthProvider.OtpStatusListener() {
+            @Override
+            public void onOtpSentSuccessfully() {
+                //
+            }
+
+            @Override
+            public void onFailure(HasuraException e) {
+
+            }
+        });
+
+        user.signUp(new UsernameAuthProvider(username.getText().toString(), password.getText().toString()), new SignUpResponseListener() {
             @Override
             public void onSuccessAwaitingVerification(HasuraUser user) {
 
@@ -109,9 +122,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
     }
 
     private void login() {
-        user.setUsername(username.getText().toString());
-        user.setPassword(password.getText().toString());
-        user.login(new AuthResponseListener() {
+        user.login(new UsernameAuthProvider(username.getText().toString(), password.getText().toString()),new AuthResponseListener() {
             @Override
             public void onSuccess(String message) {
                 ToDoActivity.startActivity(AuthenticationActivity.this);
@@ -122,9 +133,7 @@ public class AuthenticationActivity extends BaseActivity implements View.OnClick
                 handleError(e);
             }
         });
-
     }
-
 
     @Override
     public void onClick(View v) {

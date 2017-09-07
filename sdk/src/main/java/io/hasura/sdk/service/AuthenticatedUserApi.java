@@ -16,16 +16,6 @@ public interface AuthenticatedUserApi {
 
     void sync(SyncStatusListener listener);
 
-    void changePassword(String newPassword, ChangePasswordResponseListener listener);
-
-    void changeEmail(String newEmail, ChangeEmailResponseListener listener);
-
-    void changeMobile(String newMobileNumber, ChangeMobileResponseListener listener);
-
-    void deleteAccount(DeleteAccountResponseListener listener);
-
-    void changeUsername(String newUsername, ChangeUserNameResponseListener listener);
-
     void logout(LogoutResponseListener listener);
 
 }

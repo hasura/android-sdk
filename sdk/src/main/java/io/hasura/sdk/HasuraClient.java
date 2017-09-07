@@ -1,15 +1,17 @@
 package io.hasura.sdk;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.hasura.sdk.authProvider.EmailAuthProvider;
+import io.hasura.sdk.authProvider.MobileAuthProvider;
 import io.hasura.sdk.query.HasuraQuery;
 import io.hasura.sdk.responseListener.FileDownloadResponseListener;
 import io.hasura.sdk.service.CustomService;
+import io.hasura.sdk.service.EmailAuthProviderAPIService;
 import io.hasura.sdk.service.HasuraFileService;
+import io.hasura.sdk.service.MobileAuthProviderAPIService;
 import okhttp3.*;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -63,6 +65,18 @@ public class HasuraClient {
                 .shouldEnableLogging(builder.shouldEnableLogs)
                 .build();
 
+        OkHttpClient.Builder anonymousClientBuilder = new OkHttpClient.Builder();
+        if (this.shouldEnableLogs) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            anonymousClientBuilder.addInterceptor(logging);
+        }
+
+        //Setting the apiService for the different providers
+        OkHttpClient anonymousClient = anonymousClientBuilder.build();
+        EmailAuthProvider.setApiService(new EmailAuthProviderAPIService(projectConfig.getAuthUrl(), anonymousClient));
+        MobileAuthProvider.setApiService(new MobileAuthProviderAPIService(projectConfig.getAuthUrl(), anonymousClient));
+
         //update the user with saved data
         HasuraSessionStore.updateUserWithSavedData(this.currentUser);
     }
@@ -101,8 +115,6 @@ public class HasuraClient {
     public HasuraUser getUser() {
         return currentUser;
     }
-
-    /**************************************DATA SERVICE*********************************************/
 
     private HasuraTokenInterceptor getTokenInterceptorForRole(String role) {
         if (interceptorRoleMap.containsKey(role)) {
