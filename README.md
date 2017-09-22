@@ -3,6 +3,11 @@ Android SDK
 
 The Android SDK for Hasura.
 
+NOTE
+====
+
+This sdk works with Hasura running on version below 0.15.
+
 
 Installation
 ------------
