@@ -173,7 +173,7 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
         return authToken;
     }
 
-    private void setId(Integer id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -182,33 +182,33 @@ public class HasuraUser implements AnonymousUserApi, AuthenticatedUserApi {
         this.stateChangeListener.onSocialLoginAccessTokenChanged(socialLoginTypeAccessTokenMap);
     }
 
-    private void setRoles(String[] roles) {
+    public void setRoles(String[] roles) {
         this.roles = roles;
         this.stateChangeListener.onRolesChanged(roles);
     }
 
-    private void setAuthToken(String authToken) {
+    public void setAuthToken(String authToken) {
         this.authToken = authToken;
         this.stateChangeListener.onAuthTokenChanged(authToken);
     }
 
-    private void setUsername(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    private void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    private void setEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    private void setMobile(String mobile) {
+    public void setMobile(String mobile) {
         this.mobile = mobile;
     }
 
-    private void setSession(AuthResponse response) {
+    public void setSession(AuthResponse response) {
         setId(response.getId());
         setAuthToken(response.getAuthToken());
         setRoles(response.getRoles());
