@@ -1,7 +1,5 @@
 package io.hasura.sdk.authProvider;
 
-import io.hasura.sdk.HasuraUser;
-
 /**
  * Created by jaison on 06/09/17.
  */

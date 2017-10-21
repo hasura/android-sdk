@@ -26,7 +26,7 @@ public class AnonymousApiService extends HasuraHttpService {
 
     public Call<AuthResponse, HasuraException> signUp(HasuraAuthProvider authProvider) {
         JsonObject rootObject = new JsonObject();
-        rootObject.addProperty("type", authProvider.getProviderType());
+        rootObject.addProperty("provider", authProvider.getProviderType());
         JsonElement dataElement = new Gson().toJsonTree(authProvider.getDataObject());
         rootObject.add("data", dataElement);
         String jsonBody = gson.toJson(rootObject);
@@ -36,7 +36,7 @@ public class AnonymousApiService extends HasuraHttpService {
 
     public Call<AuthResponse, HasuraException> login(HasuraAuthProvider authProvider) {
         JsonObject rootObject = new JsonObject();
-        rootObject.addProperty("type", authProvider.getProviderType());
+        rootObject.addProperty("provider", authProvider.getProviderType());
         JsonElement dataElement = new Gson().toJsonTree(authProvider.getDataObject());
         rootObject.add("data", dataElement);
         String jsonBody = gson.toJson(rootObject);
