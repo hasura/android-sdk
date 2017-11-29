@@ -65,7 +65,7 @@ public class ProjectConfig {
         static Boolean IS_ENABLED_OVER_HTTP = false;
         static String DEFAULT_ROLE = "user";
         static Integer API_VERSION = 1;
-        static Integer AUTH_API_VERSION = 2;
+        static Integer AUTH_API_VERSION = 1;
     }
 
     private static class SERVICE {
